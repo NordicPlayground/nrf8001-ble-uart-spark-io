@@ -23,25 +23,10 @@
 @brief Implementation of the ACI transport layer module
 */
 
-#include <SPI.h>
+#include <application.h>
 #include "hal_platform.h"
 #include "hal_aci_tl.h"
 #include "aci_queue.h"
-#include <avr/sleep.h>
-
-/*
-PIC32 supports only MSbit transfer on SPI and the nRF8001 uses LSBit
-Use the REVERSE_BITS macro to convert from MSBit to LSBit
-The outgoing command and the incoming event needs to be converted
-*/
-//Board dependent defines
-#if defined (__AVR__)
-    //For Arduino add nothing
-#elif defined(__PIC32MX__)
-    //For ChipKit as the transmission has to be reversed, the next definitions have to be added
-    #define REVERSE_BITS(byte) (((reverse_lookup[(byte & 0x0F)]) << 4) + reverse_lookup[((byte & 0xF0) >> 4)])
-    static const uint8_t reverse_lookup[] = { 0, 8,  4, 12, 2, 10, 6, 14,1, 9, 5, 13,3, 11, 7, 15 };
-#endif
 
 static void m_aci_data_print(hal_aci_data_t *p_data);
 static void m_aci_event_check(void);
@@ -281,10 +266,7 @@ void hal_aci_tl_pin_reset(void)
 
 bool hal_aci_tl_event_peek(hal_aci_data_t *p_aci_data)
 {
-  if (!a_pins_local_ptr->interface_is_interrupt)
-  {
-    m_aci_event_check();
-  }
+  m_aci_event_check();
 
   if (aci_queue_peek(&aci_rx_q, p_aci_data))
   {
@@ -298,7 +280,7 @@ bool hal_aci_tl_event_get(hal_aci_data_t *p_aci_data)
 {
   bool was_full;
 
-  if (!a_pins_local_ptr->interface_is_interrupt && !aci_queue_is_full(&aci_rx_q))
+  if (!aci_queue_is_full(&aci_rx_q))
   {
     m_aci_event_check();
   }
@@ -311,12 +293,6 @@ bool hal_aci_tl_event_get(hal_aci_data_t *p_aci_data)
     {
       Serial.print(" E");
       m_aci_data_print(p_aci_data);
-    }
-
-    if (was_full && a_pins_local_ptr->interface_is_interrupt)
-	  {
-      /* Enable RDY line interrupt again */
-      attachInterrupt(a_pins_local_ptr->interrupt_number, m_aci_isr, LOW);
     }
 
     /* Attempt to pull REQN LOW since we've made room for new messages */
@@ -346,14 +322,8 @@ void hal_aci_tl_init(aci_pins_t *a_pins, bool debug)
   The SPI library assumes that the hardware pins are used
   */
   SPI.begin();
-  //Board dependent defines
-  #if defined (__AVR__)
-    //For Arduino use the LSB first
-    SPI.setBitOrder(LSBFIRST);
-  #elif defined(__PIC32MX__)
-    //For ChipKit use MSBFIRST and REVERSE the bits on the SPI as LSBFIRST is not supported
-    SPI.setBitOrder(MSBFIRST);
-  #endif
+  
+  SPI.setBitOrder(LSBFIRST);
   SPI.setClockDivider(a_pins->spi_clock_divider);
   SPI.setDataMode(SPI_MODE0);
 
@@ -380,12 +350,6 @@ void hal_aci_tl_init(aci_pins_t *a_pins, bool debug)
 
   delay(30); //Wait for the nRF8001 to get hold of its lines - the lines float for a few ms after the reset
 
-  /* Attach the interrupt to the RDYN line as requested by the caller */
-  if (a_pins->interface_is_interrupt)
-  {
-    // We use the LOW level of the RDYN line as the atmega328 can wakeup from sleep only on LOW
-    attachInterrupt(a_pins->interrupt_number, m_aci_isr, LOW);
-  }
 }
 
 bool hal_aci_tl_send(hal_aci_data_t *p_aci_cmd)
@@ -419,16 +383,7 @@ bool hal_aci_tl_send(hal_aci_data_t *p_aci_cmd)
 
 static uint8_t spi_readwrite(const uint8_t aci_byte)
 {
-	//Board dependent defines
-#if defined (__AVR__)
-    //For Arduino the transmission does not have to be reversed
-    return SPI.transfer(aci_byte);
-#elif defined(__PIC32MX__)
-    //For ChipKit the transmission has to be reversed
-    uint8_t tmp_bits;
-    tmp_bits = SPI.transfer(REVERSE_BITS(aci_byte));
-	return REVERSE_BITS(tmp_bits);
-#endif
+  return SPI.transfer(aci_byte);
 }
 
 bool hal_aci_tl_rx_q_empty (void)

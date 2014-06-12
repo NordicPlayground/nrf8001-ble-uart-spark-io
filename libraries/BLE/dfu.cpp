@@ -1,6 +1,6 @@
-#include <lib_aci.h>
-#include <ble_assert.h>
-#include <dfu.h>
+#include "lib_aci.h"
+#include "ble_assert.h"
+#include "dfu.h"
 
 static uint8_t state = ST_ANY;
 static uint32_t firmware_len;
@@ -17,7 +17,10 @@ static uint8_t dfu_image_activate  (aci_state_t *aci_state, aci_evt_t *aci_evt);
 static uint8_t dfu_image_size_set (aci_state_t *aci_state, aci_evt_t *aci_evt);
 static uint8_t dfu_image_validate  (aci_state_t *aci_state, aci_evt_t *aci_evt);
 
-#define DEBUG
+#ifndef DEBUG
+#		define DEBUG
+#endif
+
 
 enum
 {
@@ -69,7 +72,7 @@ static uint8_t dfu_data_pkt_handle (aci_state_t *aci_state, aci_evt_t *aci_evt)
   {
       #ifdef DEBUG
       Serial.println(F(" Writing notification"));
-      #endif DEBUG
+      #endif
 
       dfu_notify (aci_state);
   }

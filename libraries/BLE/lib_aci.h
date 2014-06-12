@@ -30,7 +30,7 @@
 @{
 @brief Library for the logical part of the Application Controller Interface (ACI)
 */
-
+#include <application.h>
 #include "hal_platform.h"
 #include "hal_aci_tl.h"
 #include "aci_queue.h"
