@@ -28,6 +28,12 @@
 #include "hal_aci_tl.h"
 #include "aci_queue.h"
 
+/*
+* The STM32fxx can't handle LSBFIRST, and a byte flip is necessary 
+*/
+#define REVERSE_BITS(byte) (((reverse_lookup[(byte & 0x0F)]) << 4) + reverse_lookup[((byte & 0xF0) >> 4)])
+static const uint8_t reverse_lookup[] = { 0, 8,  4, 12, 2, 10, 6, 14,1, 9, 5, 13,3, 11, 7, 15 };
+
 static void m_aci_data_print(hal_aci_data_t *p_data);
 static void m_aci_event_check(void);
 static void m_aci_isr(void);
@@ -114,6 +120,7 @@ static void m_aci_event_check(void)
   hal_aci_data_t data_to_send;
   hal_aci_data_t received_data;
 
+
   // No room to store incoming messages
   if (aci_queue_is_full(&aci_rx_q))
   {
@@ -127,7 +134,6 @@ static void m_aci_event_check(void)
     {
       m_aci_reqn_enable();
     }
-
     return;
   }
 
@@ -160,7 +166,6 @@ static void m_aci_event_check(void)
       while(1);
     }
   }
-
   return;
 }
 
@@ -222,6 +227,9 @@ static bool m_aci_spi_transfer(hal_aci_data_t * data_to_send, hal_aci_data_t * r
   {
     max_bytes = HAL_ACI_MAX_LENGTH;
   }
+	
+	Serial.print("Max number of bytes: ");
+	Serial.println(max_bytes, DEC);
 
   // Transmit/receive the rest of the packet
   for (byte_cnt = 0; byte_cnt < max_bytes; byte_cnt++)
@@ -323,7 +331,7 @@ void hal_aci_tl_init(aci_pins_t *a_pins, bool debug)
   */
   SPI.begin();
   
-  SPI.setBitOrder(LSBFIRST);
+  SPI.setBitOrder(MSBFIRST);
   SPI.setClockDivider(a_pins->spi_clock_divider);
   SPI.setDataMode(SPI_MODE0);
 
@@ -382,8 +390,25 @@ bool hal_aci_tl_send(hal_aci_data_t *p_aci_cmd)
 }
 
 static uint8_t spi_readwrite(const uint8_t aci_byte)
-{
-  return SPI.transfer(aci_byte);
+{	
+
+	uint8_t tmp_bits;
+	tmp_bits = SPI.transfer(REVERSE_BITS(aci_byte));
+	return REVERSE_BITS(tmp_bits);
+
+	//For Spark, operate the SPI manually
+/*	SPI1->DR = aci_byte; 
+	
+	//Wait for TX to complete
+	while(!(SPI1->SR & SPI_I2S_FLAG_TXE)); 
+	
+	//Wait for RX to complete
+	while(!(SPI1->SR & SPI_I2S_FLAG_RXNE));
+	
+	//Wait for SPI to no longer be busy
+	while(SPI1->SR & SPI_I2S_FLAG_BSY);
+	
+	return REVERSE_BITS((uint8_t) SPI1->DR); 	*/
 }
 
 bool hal_aci_tl_rx_q_empty (void)

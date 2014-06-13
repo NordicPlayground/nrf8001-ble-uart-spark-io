@@ -71,6 +71,20 @@
 	
 	//Redefine the function for reading from flash in ChipKit
 	#define memcpy_P        memcpy
-#endif
+	
+#else /*SPARK_CORE*/
+	// define "SPARK_CORE" is first defined in application.h
+
+	//All of Spark's Arduino implementations are included in application.h in the firmware
+	#include <application.h>
+	
+	//Flash store not yet available for Spark Core
+	#define PROGMEM  
+	#define PSTR(s) (s)	
+	
+	#define memcpy_P        memcpy
+	
+	
+#endif /* SPARK_CORE */
 
 #endif /* PLATFORM_H__ */
