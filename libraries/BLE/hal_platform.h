@@ -26,65 +26,14 @@
 * @brief 
 */
 
-//Board dependent defines
-#if defined (__AVR__)
-    //For Arduino this AVR specific library has to be used for reading from Flash memory
-    #include <avr/pgmspace.h>
-    #include "Arduino.h"
-    #ifdef PROGMEM
-        #undef PROGMEM
-        #define PROGMEM __attribute__(( section(".progmem.data") ))
-	    #endif
-#elif defined(__PIC32MX__)
-    //For Chipkit add the following libraries.
-    #include <stdint.h>
-    #include <stdbool.h>
-    #include <string.h>
-    #include <wiring.h>
-    #include <WProgram.h>
-	
-	//For making the Serial.Print compatible between Arduino and Chipkit
-	#define F(X) (X)
-	
-	//For ChipKit neither PROGMEM or PSTR are needed for PIC32
-    #define PROGMEM
-    #define PSTR(s) (s)	
+//All of Spark's Arduino function implementations are included in application.h in the firmware
+#include <application.h>
 
-    #define pgm_read_byte(x)	        (*((char *)x))
-    #define pgm_read_byte_near(x)	(*((char *)x))
-    #define pgm_read_byte_far(x)	    (*((char *)x))
-    #define pgm_read_word(x)    	    (*((short *)x))
-    #define pgm_read_word_near(x)	(*((short *)x))
-    #define pgm_read_workd_far(x)	(*((short *)x))
+//Flash store not yet available for Spark Core
+#define PROGMEM  
+#define PSTR(s) (s)	
 
-    #define	prog_void	    const void
-    #define	prog_char	    const char
-    #define	prog_uchar	    const unsigned char
-    #define	prog_int8_t	    const int8_t
-    #define	prog_uint8_t	const uint8_t
-    #define	prog_int16_t	const int16_t
-    #define	prog_uint16_t	const uint16_t
-    #define	prog_int32_t	const int32_t
-    #define	prog_uint32_t	const uint32_t
-    #define	prog_int64_t	const int64_t
-    #define	prog_uint64_t	const uint64_t
+#define memcpy_P        memcpy
 	
-	//Redefine the function for reading from flash in ChipKit
-	#define memcpy_P        memcpy
-	
-#else /*SPARK_CORE*/
-	// define "SPARK_CORE" is first defined in application.h
-
-	//All of Spark's Arduino implementations are included in application.h in the firmware
-	#include <application.h>
-	
-	//Flash store not yet available for Spark Core
-	#define PROGMEM  
-	#define PSTR(s) (s)	
-	
-	#define memcpy_P        memcpy
-	
-	
-#endif /* SPARK_CORE */
 
 #endif /* PLATFORM_H__ */

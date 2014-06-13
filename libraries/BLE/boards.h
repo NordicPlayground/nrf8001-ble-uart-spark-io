@@ -31,4 +31,6 @@
 #define REDBEARLAB_SHIELD_V2012_07  1 //Identical to Redbearlab v1.1 shield
 #define REDBEARLAB_SHIELD_V2        0 //Redbearlab Bluetooth low energy shield v2.x - No special handling required for pin reset same as default
 
+#define BOARD_SPARK_CORE						0	//Spark Core - No special handling required for pin reset, same as default
+
 #endif

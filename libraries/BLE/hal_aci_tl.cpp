@@ -23,16 +23,9 @@
 @brief Implementation of the ACI transport layer module
 */
 
-#include <application.h>
 #include "hal_platform.h"
 #include "hal_aci_tl.h"
 #include "aci_queue.h"
-
-/*
-* The STM32fxx can't handle LSBFIRST, and a byte flip is necessary 
-*/
-#define REVERSE_BITS(byte) (((reverse_lookup[(byte & 0x0F)]) << 4) + reverse_lookup[((byte & 0xF0) >> 4)])
-static const uint8_t reverse_lookup[] = { 0, 8,  4, 12, 2, 10, 6, 14,1, 9, 5, 13,3, 11, 7, 15 };
 
 static void m_aci_data_print(hal_aci_data_t *p_data);
 static void m_aci_event_check(void);
@@ -227,9 +220,6 @@ static bool m_aci_spi_transfer(hal_aci_data_t * data_to_send, hal_aci_data_t * r
   {
     max_bytes = HAL_ACI_MAX_LENGTH;
   }
-	
-	Serial.print("Max number of bytes: ");
-	Serial.println(max_bytes, DEC);
 
   // Transmit/receive the rest of the packet
   for (byte_cnt = 0; byte_cnt < max_bytes; byte_cnt++)
@@ -250,26 +240,15 @@ void hal_aci_tl_debug_print(bool enable)
 
 void hal_aci_tl_pin_reset(void)
 {
-    if (UNUSED != a_pins_local_ptr->reset_pin)
-    {
-        pinMode(a_pins_local_ptr->reset_pin, OUTPUT);
+	if (UNUSED != a_pins_local_ptr->reset_pin)
+	{
+		pinMode(a_pins_local_ptr->reset_pin, OUTPUT);
 
-        if ((REDBEARLAB_SHIELD_V1_1     == a_pins_local_ptr->board_name) ||
-            (REDBEARLAB_SHIELD_V2012_07 == a_pins_local_ptr->board_name))
-        {
-            //The reset for the Redbearlab v1.1 and v2012.07 boards are inverted and has a Power On Reset
-            //circuit that takes about 100ms to trigger the reset
-            digitalWrite(a_pins_local_ptr->reset_pin, 1);
-            delay(100);
-            digitalWrite(a_pins_local_ptr->reset_pin, 0);
-        }
-        else
-        {
-            digitalWrite(a_pins_local_ptr->reset_pin, 1);
-            digitalWrite(a_pins_local_ptr->reset_pin, 0);
-            digitalWrite(a_pins_local_ptr->reset_pin, 1);
-        }
-    }
+		digitalWrite(a_pins_local_ptr->reset_pin, 1);
+		digitalWrite(a_pins_local_ptr->reset_pin, 0);
+		digitalWrite(a_pins_local_ptr->reset_pin, 1);
+			
+	}
 }
 
 bool hal_aci_tl_event_peek(hal_aci_data_t *p_aci_data)
@@ -331,7 +310,7 @@ void hal_aci_tl_init(aci_pins_t *a_pins, bool debug)
   */
   SPI.begin();
   
-  SPI.setBitOrder(MSBFIRST);
+  SPI.setBitOrder(LSBFIRST);
   SPI.setClockDivider(a_pins->spi_clock_divider);
   SPI.setDataMode(SPI_MODE0);
 
@@ -391,24 +370,7 @@ bool hal_aci_tl_send(hal_aci_data_t *p_aci_cmd)
 
 static uint8_t spi_readwrite(const uint8_t aci_byte)
 {	
-
-	uint8_t tmp_bits;
-	tmp_bits = SPI.transfer(REVERSE_BITS(aci_byte));
-	return REVERSE_BITS(tmp_bits);
-
-	//For Spark, operate the SPI manually
-/*	SPI1->DR = aci_byte; 
-	
-	//Wait for TX to complete
-	while(!(SPI1->SR & SPI_I2S_FLAG_TXE)); 
-	
-	//Wait for RX to complete
-	while(!(SPI1->SR & SPI_I2S_FLAG_RXNE));
-	
-	//Wait for SPI to no longer be busy
-	while(SPI1->SR & SPI_I2S_FLAG_BSY);
-	
-	return REVERSE_BITS((uint8_t) SPI1->DR); 	*/
+	return SPI.transfer(aci_byte);
 }
 
 bool hal_aci_tl_rx_q_empty (void)
