@@ -1,0 +1,54 @@
+#ifndef _UART_ACI_H__
+#define _UART_ACI_H__
+
+#include <application.h>
+#include "lib_aci.h"
+#include "aci_setup.h"
+#include "uart_over_ble.h"
+#include "services.h"
+
+// aci_struct that will contain
+// total initial credits
+// current credit
+// current state of the aci (setup/standby/active/sleep)
+// open remote pipe pending
+// close remote pipe pending
+// Current pipe available bitmap
+// Current pipe closed bitmap
+// Current connection interval, slave latency and link supervision timeout
+// Current State of the the GATT client (Service Discovery)
+// Status of the bond (R) Peer address
+extern struct aci_state_t aci_state;
+
+/**
+* Wrapper for the Serial.print() function, added in order to reduce memory usage
+* for comments.
+*/
+//#define NRF_DO_PRINT (1)
+
+#ifdef NRF_DO_PRINT
+#define PRINT(x) Serial.print(x);
+#define PRINT_BASE(x, y) Serial.print(x, y);
+#else
+#define PRINT(x) 
+#define PRINT_BASE(x, y) 
+#endif
+
+
+/**
+* BLE UART handling of incoming UART configuration data 
+*/
+bool uart_process_control_point_rx(uint8_t *byte, uint8_t length);
+
+
+/**
+* Top level nRF8001 event handling. Checks and handles all incoming ACI events from the aci_queue.
+* This function does application specific event handling, and was the main application layer loop in the 
+* Hello_BLE example for the Arduino library. 
+*
+* Directs any incoming UART messages to the nRF8001BleUartRx callback function defined in nrf8001-ble-uart.h,
+* which should be implemented by the user
+*/
+void aci_loop(void);
+
+#endif

@@ -1,3 +1,15 @@
+
+
+/**
+* Example usage of the nrf8001-ble-uart library from Nordic Semiconductor
+* Note that all user functions are defined in the nrf8001-ble-uart.h, no further
+* interaction with the library should be necessary.
+*
+* The nRF8001BleUartRx function is not implemented in the library itself, and 
+* should be handled as a callback function for any incoming messages over the BLE UART
+* 
+* 
+*/
 #include "nrf8001-ble-uart.h"
 
 /**
@@ -21,6 +33,9 @@ static void clear_serial_buffer()
 	}
 }
 
+/**
+* Main Arduino compliant setup function
+*/
 void setup(void)
 {
 	// Initiate Serial communication
@@ -31,10 +46,28 @@ void setup(void)
 	delay(1000);
 	
 	// Do the BLE UART setup:
-	ble_uart_setup();
+	nRF8001BleUartSetup();
 	
 	// Clear the serial buffer:
 	clear_serial_buffer();	
+}
+
+/**
+* Implementation of RX callback function
+* Handles any incoming data from the BLE UART
+* 
+* Simply sends all messages directly to terminal
+*/
+void nRF8001BleUartRx(uint8_t *buffer, uint8_t len)
+{
+	Serial.print("Received data: ");
+	
+	for (uint8_t i = 0; i < len; ++i)
+	{
+		Serial.print((char) buffer[i]);
+	}
+	
+	Serial.print("\n");
 }
 
 /**
@@ -55,7 +88,7 @@ void handle_serial_input()
 		if ('\n' == serial_buffer[msg_length - 1] || 
 							SERIAL_BUFFER_LENGTH == msg_length)
 		{
-			ble_uart_tx(serial_buffer, msg_length - 1);
+			nRF8001BleUartTx(serial_buffer, msg_length - 1);
 			
 			// Prepare the buffer for the next message:
 			clear_serial_buffer();
@@ -68,7 +101,7 @@ void loop(void)
 {
 	// Run the BLE UART loop once in every loop, 
 	// to let it handle any BLE events
-	ble_uart_loop();
+	nRF8001BleUartLoop();
 	
 	// handle all serial reads in one separate function:
 	handle_serial_input();
