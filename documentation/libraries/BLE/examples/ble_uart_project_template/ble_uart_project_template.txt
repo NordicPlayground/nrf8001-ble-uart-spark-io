@@ -1,1 +1,0 @@
-testing that the mirror is configured correctly
