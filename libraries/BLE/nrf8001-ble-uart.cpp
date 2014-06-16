@@ -63,6 +63,16 @@ The following instructions describe the steps to be made on the Windows PC:
 #include "aci_setup.h"
 #include "uart_over_ble.h"
 
+//#define DO_PRINT (1)
+
+
+#ifdef DO_PRINT
+#define PRINT(x) Serial.print(x);
+#define PRINT_BASE(x, y) Serial.print(x, y);
+#else
+#define PRINT(x) 
+#define PRINT_BASE(x, y) 
+#endif
 /**
 Put the nRF8001 setup in the RAM of the nRF8001.
 */
@@ -73,7 +83,6 @@ This would mean that the setup cannot be changed once put in.
 However this removes the need to do the setup of the nRF8001 on every reset.
 */
 
-
 #ifdef SERVICES_PIPE_TYPE_MAPPING_CONTENT
     static services_pipe_type_mapping_t
         services_pipe_type_mapping[NUMBER_OF_PIPES] = SERVICES_PIPE_TYPE_MAPPING_CONTENT;
@@ -81,6 +90,7 @@ However this removes the need to do the setup of the nRF8001 on every reset.
     #define NUMBER_OF_PIPES 0
     static services_pipe_type_mapping_t * services_pipe_type_mapping = NULL;
 #endif
+
 
 static hal_aci_data_t setup_msgs[NB_SETUP_MESSAGES] = SETUP_MESSAGES_CONTENT;
 
@@ -121,11 +131,11 @@ Initialize the radio_ack. This is the ack received for every transmitted packet.
 /* Define how assert should function in the BLE library */
 void __ble_assert(const char *file, uint16_t line)
 {
-  Serial.print("BLE UART ERROR ");
-  Serial.print(file);
-  Serial.print(": ");
-  Serial.print(line);
-  Serial.print("\n");
+	PRINT("BLE UART ERROR");
+	PRINT(file);
+	PRINT(": ");
+	PRINT(line);
+	PRINT("\n");
   while(1);
 }
 /*
@@ -143,8 +153,8 @@ The ACI Evt Data Credit provides the radio level ack of a transmitted packet.
 */
 void ble_uart_setup(void)
 {
-  Serial.println(F("Spark Core setup"));
-  Serial.println(F("Set line ending to newline to send data from the serial monitor"));
+	PRINT("Spark Core Setup");
+	PRINT("Set line ending to newline to send data from the serial monitor");
 
   /**
   Point ACI data structures to the the setup data that the nRFgo studio generated for the nRF8001
@@ -187,7 +197,8 @@ void ble_uart_setup(void)
   //then we initialize the data structures required to setup the nRF8001
   //The second parameter is for turning debug printing on for the ACI Commands and Events so they be printed on the Serial
   lib_aci_init(&aci_state, false);
-  Serial.println(F("Set up done"));
+	
+	PRINT("SETUP DONE");
 }
 
 bool ble_uart_tx(uint8_t *buffer, uint8_t buffer_len)
@@ -214,7 +225,7 @@ static bool uart_process_control_point_rx(uint8_t *byte, uint8_t length)
 
   if (lib_aci_is_pipe_available(&aci_state, PIPE_UART_OVER_BTLE_UART_CONTROL_POINT_TX) )
   {
-    Serial.println(*byte, HEX);
+    PRINT_BASE(*byte, HEX);
     switch(*byte)
     {
       /*
@@ -305,12 +316,12 @@ static void aci_loop()
             /**
             When the device is in the setup mode
             */
-            Serial.println(F("Evt Device Started: Setup"));
+            PRINT("Event device started: Setup");
             setup_required = true;
             break;
 
           case ACI_DEVICE_STANDBY:
-            Serial.println(F("Evt Device Started: Standby"));
+            PRINT("Evt Device Started: Standby");
             //Looking for an iPhone by sending radio advertisements
             //When an iPhone connects to us we will get an ACI_EVT_CONNECTED event from the nRF8001
             if (aci_evt->params.device_started.hw_error)
@@ -320,10 +331,12 @@ static void aci_loop()
             else
             {
               lib_aci_connect(0/* in seconds : 0 means forever */, 0x0050 /* advertising interval 50ms*/);
-              Serial.println(F("Advertising started : Tap Connect on the nRF UART app"));
+              PRINT("Advertising started : Tap Connect on the nRF UART app");
             }
 
             break;
+					default:
+						break;
         }
       }
       break; //ACI Device Started Event
@@ -335,10 +348,10 @@ static void aci_loop()
           //ACI ReadDynamicData and ACI WriteDynamicData will have status codes of
           //TRANSACTION_CONTINUE and TRANSACTION_COMPLETE
           //all other ACI commands will have status code of ACI_STATUS_SCUCCESS for a successful command
-          Serial.print(F("ACI Command "));
-          Serial.println(aci_evt->params.cmd_rsp.cmd_opcode, HEX);
-          Serial.print(F("Evt Cmd respone: Status "));
-          Serial.println(aci_evt->params.cmd_rsp.cmd_status, HEX);
+          PRINT("ACI Command");
+          PRINT_BASE(aci_evt->params.cmd_rsp.cmd_opcode, HEX);
+          PRINT("Evt Cmd respone: Status ");
+          PRINT_BASE(aci_evt->params.cmd_rsp.cmd_status, HEX);
         }
         if (ACI_CMD_GET_DEVICE_VERSION == aci_evt->params.cmd_rsp.cmd_opcode)
         {
@@ -349,7 +362,7 @@ static void aci_loop()
         break;
 
       case ACI_EVT_CONNECTED:
-        Serial.println(F("Evt Connected"));
+        PRINT("Evt Connected");
 				
         timing_change_done              = false;
         aci_state.data_credit_available = aci_state.data_credit_total;
@@ -361,7 +374,7 @@ static void aci_loop()
         break;
 
       case ACI_EVT_PIPE_STATUS:
-        Serial.println(F("Evt Pipe Status"));
+        PRINT("Evt Pipe Status");
         if (lib_aci_is_pipe_available(&aci_state, PIPE_UART_OVER_BTLE_UART_TX_TX) && (false == timing_change_done))
         {
           lib_aci_change_timing_GAP_PPCP(); // change the timing on the link as specified in the nRFgo studio -> nRF8001 conf. -> GAP.
@@ -376,7 +389,7 @@ static void aci_loop()
         break;
 
       case ACI_EVT_TIMING:
-        Serial.println(F("Evt link connection interval changed"));
+        PRINT("Evt link connection interval changed");
         lib_aci_set_local_data(&aci_state,
                                 PIPE_UART_OVER_BTLE_UART_LINK_TIMING_CURRENT_SET,
                                 (uint8_t *)&(aci_evt->params.timing.conn_rf_interval), /* Byte aligned */
@@ -384,15 +397,15 @@ static void aci_loop()
         break;
 
       case ACI_EVT_DISCONNECTED:
-        Serial.println(F("Evt Disconnected/Advertising timed out"));
+        PRINT("Evt Disconnected/Advertising timed out");
         lib_aci_connect(0/* in seconds  : 0 means forever */, 0x0050 /* advertising interval 50ms*/);
-        Serial.println(F("Advertising started. Tap Connect on the nRF UART app"));
+        PRINT("Advertising started. Tap Connect on the nRF UART app");
         break;
 
       case ACI_EVT_DATA_RECEIVED:
         if (PIPE_UART_OVER_BTLE_UART_RX_RX == aci_evt->params.data_received.rx_data.pipe_number)
 				{
-					Serial.print(F("Received data: "));
+					PRINT("Received data: ");
 					for(int i=0; i<aci_evt->len - 2; i++)
 					{
 						Serial.print((char)aci_evt->params.data_received.rx_data.aci_data[i]);
@@ -411,10 +424,10 @@ static void aci_loop()
 
       case ACI_EVT_PIPE_ERROR:
         //See the appendix in the nRF8001 Product Specification for details on the error codes
-        Serial.print(F("ACI Evt Pipe Error: Pipe #:"));
-        Serial.print(aci_evt->params.pipe_error.pipe_number, DEC);
-        Serial.print(F("  Pipe Error Code: 0x"));
-        Serial.println(aci_evt->params.pipe_error.error_code, HEX);
+        PRINT("ACI Evt Pipe Error: Pipe #:");
+        PRINT_BASE(aci_evt->params.pipe_error.pipe_number, DEC);
+        PRINT("  Pipe Error Code: 0x");
+        PRINT_BASE(aci_evt->params.pipe_error.error_code, HEX);
 
         //Increment the credit available as the data packet was not sent.
         //The pipe error also represents the Attribute protocol Error Response sent from the peer and that should not be counted
@@ -426,16 +439,16 @@ static void aci_loop()
         break;
 
       case ACI_EVT_HW_ERROR:
-        Serial.print(F("HW error: "));
-        Serial.println(aci_evt->params.hw_error.line_num, DEC);
+        PRINT("HW error: ");
+        PRINT_BASE(aci_evt->params.hw_error.line_num, DEC);
 
         for(uint8_t counter = 0; counter <= (aci_evt->len - 3); counter++)
         {
-          Serial.write(aci_evt->params.hw_error.file_name[counter]); //uint8_t file_name[20];
+          PRINT(aci_evt->params.hw_error.file_name[counter]); //uint8_t file_name[20];
         }
-        Serial.println();
+        PRINT("\n");
         lib_aci_connect(0/* in seconds, 0 means forever */, 0x0050 /* advertising interval 50ms*/);
-        Serial.println(F("Advertising started. Tap Connect on the nRF UART app"));
+        PRINT("Advertising started. Tap Connect on the nRF UART app");
         break;
 			default:
 				break;

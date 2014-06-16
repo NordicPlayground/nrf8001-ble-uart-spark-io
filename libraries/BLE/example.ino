@@ -5,7 +5,7 @@
 * a buffer
 */
 
-#define SERIAL_BUFFER_LENGTH 64
+#define SERIAL_BUFFER_LENGTH 32
 
 static uint8_t serial_buffer[SERIAL_BUFFER_LENGTH];
 

@@ -102,7 +102,7 @@ void lib_aci_board_init(aci_state_t *aci_stat)
 {
 	hal_aci_evt_t *aci_data = NULL;
 	aci_data = (hal_aci_evt_t *)&msg_to_send;
-					
+#if 0
 	if (REDBEARLAB_SHIELD_V1_1 == aci_stat->aci_pins.board_name)
 	{
 	  /*
@@ -172,6 +172,7 @@ void lib_aci_board_init(aci_state_t *aci_stat)
 		}
 	  }		
 	}
+#endif
 }
 
 

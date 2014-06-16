@@ -22,6 +22,8 @@
 #include "lib_aci.h"
 #include "aci_setup.h"
 
+#include "services.h"
+
 
 // aci_struct that will contain 
 // total initial credits
@@ -36,6 +38,13 @@
 
 
 extern hal_aci_data_t msg_to_send;
+
+
+// Setup messages used in aci_setup_fill. Application specific. 
+// This is originally done in nrf8001-ble-uart.cpp, but
+// because the Spark Core misses the PROGMEM attribute, this has to be
+// done directly if we want to store it in Flash
+
 
 
 
