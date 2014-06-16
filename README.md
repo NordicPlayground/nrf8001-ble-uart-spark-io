@@ -18,9 +18,6 @@ The nRF8001 communicates with the Spark Core via SPI, and requires a strict pin 
 | RDYN			| D3					| SPI Slave ready line |
 | RESET			| D2					| nRF8001 reset signal (triggered in the library setup) |
 
-####Porting ACI Library
-A brief explanation of how to port the ACI library code is available in [/documentation/libraries/BLE](./documentation/libraries/BLE/nRF8001-Porting-ACI-Library.md "Go to document") 
-
 ##Forum
 [Nordic Developer Zone](http://devzone.nordicsemi.com/ "Go to nordic developer zone")
 
