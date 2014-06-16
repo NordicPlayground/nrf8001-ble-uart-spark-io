@@ -9,14 +9,14 @@ An example of usage can be found in /firmware/examples, structured as a simple A
 ####Connecting the nRF8001 to the Spark Core
 The nRF8001 communicates with the Spark Core via SPI, and requires a strict pin configuration:
 
-nrf8001		- Spark Core	-	Explanation
-
-MOSI 			- A5					- SPI Master Out, Slave In
-MISO			- A4					- SPI Master In, Slave Out
-CLK				- A3 					- SPI Bus clock
-REQN			- D4					- SPI Master request line
-RDYN			- D3					- SPI Slave ready line
-RESET			- D2					- nRF8001 reset signal (triggered in the library setup)
+|nrf8001		| Spark Core	|	Explanation |
+| --------- | ----------- | ----------- |
+| MOSI 			| A5					| SPI Master Out, Slave In |
+| MISO			| A4					| SPI Master In, Slave Out |
+| CLK				| A3 					| SPI Bus clock |
+| REQN			| D4					| SPI Master request line |
+| RDYN			| D3					| SPI Slave ready line |
+| RESET			| D2					| nRF8001 reset signal (triggered in the library setup) |
 
 ####Porting ACI Library
 A brief explanation of how to port the ACI library code is available in [/documentation/libraries/BLE](./documentation/libraries/BLE/nRF8001-Porting-ACI-Library.md "Go to document") 
