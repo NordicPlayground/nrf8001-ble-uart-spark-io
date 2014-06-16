@@ -1,7 +1,7 @@
 {
   "name": "nrf8001-ble-uart",
   "author": "Nordic Semiconductor",
-  "license": " ",
-  "version": "1.0.0",
+  "license": "MIT",
+  "version": "0.5.0",
   "description": "A library for using the Nordic Semiconductor nRF8001 board as a BLE UART. See GitHub repository for instructions on wiring"
 }
