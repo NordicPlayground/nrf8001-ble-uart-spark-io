@@ -8,7 +8,7 @@
 * 
 * 
 */
-#include "nrf8001-ble-uart.h"
+#include "nrf8001-ble-uart-spark-io.h"
 
 /**
 * The data to be sent via the BLE UART is first stored in a 

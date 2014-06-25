@@ -1,5 +1,5 @@
 {
-  "name": "nrf8001-ble-uart",
+  "name": "nrf8001-ble-uart-spark-io",
   "author": "Nordic Semiconductor",
   "license": "MIT",
   "version": "0.5.0",

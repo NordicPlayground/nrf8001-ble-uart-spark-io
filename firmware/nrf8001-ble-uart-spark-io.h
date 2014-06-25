@@ -1,5 +1,5 @@
-#ifndef NRF8001_BLE_UART_H__
-#define NRF8001_BLE_UART_H__
+#ifndef NRF8001_BLE_UART_SPARK_IO_H__
+#define NRF8001_BLE_UART_SPARK_IO_H__
 
 #include <application.h>
 #include "uart_aci.h"
@@ -53,4 +53,4 @@ bool nRF8001BleUartTx(uint8_t *buffer, uint8_t buffer_len);
 void nRF8001BleUartRx(uint8_t *buffer, uint8_t len);
 
 
-#endif /*NRF8001_BLE_UART_H__*/
+#endif /*NRF8001_BLE_UART_SPARK_IO_H__*/
