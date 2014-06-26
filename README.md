@@ -3,7 +3,7 @@
 Bluetooth low energy as UART for Spark Core (uses the nRF8001 from [Nordic Semiconductor](https://www.nordicsemi.com/ "Go to Nordic Semiconductor's homepage")). 
 
 ##Contents
-The firmware folder contains the library, with the entire user interface defined in nrf8001-ble-uart.h.
+The firmware folder contains the library, with the entire user interface defined in nrf8001-ble-uart-spark-io.h.
 An example of usage can be found in /firmware/examples, structured as a simple Arduino sketch.
 
 ##Background
