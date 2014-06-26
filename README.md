@@ -27,6 +27,7 @@ Connect the two boards using this pin configuration:
 
 ##Resources
 [Spark.io](http://spark.io "Go to Spark.io homepage")  
-[nRF8001](https://www.nordicsemi.com/eng/Products/Bluetooth-R-low-energy/nRF8001 "Go to product")  (Data sheet for the nRF8001)
+[nRF8001](https://www.nordicsemi.com/eng/Products/Bluetooth-R-low-energy/nRF8001 "Go to product") (Data sheet for the nRF8001)
+
 [RedBearLab BLE Shield from MakerShed](http://www.makershed.com/Bluetooth_Low_Energy_BLE_Shield_for_Arduino_p/mkrbl1.htm "Go to product")  
 [RedBearLab BLE Shield from SeeedStudio](http://www.seeedstudio.com/depot/bluetooth-40-low-energy-ble-shield-v20-p-1631.html "Go to product")  
