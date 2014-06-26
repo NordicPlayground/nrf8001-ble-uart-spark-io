@@ -9,8 +9,9 @@ An example of usage can be found in /firmware/examples, structured as a simple A
 ##Background
 This library is a port from Nordic Semiconductor's [Bluetooth Low Energy for Arduino SDK](https://github.com/NordicSemiconductor/ble-sdk-arduino "Go to BLE for Arduino GitHub repository").
 
-####Connecting the nRF8001 to the Spark Core
-The nRF8001 communicates with the Spark Core via SPI, using this pin configuration:
+##Connecting the nRF8001 to the Spark Core
+The nRF8001 communicates with the Spark Core via SPI, acting like a slave.
+Connect the two boards using this pin configuration:
 
 |nrf8001		| Spark Core	|	Explanation |
 | --------- | ----------- | ----------- |
