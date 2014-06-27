@@ -8,7 +8,7 @@ An example of usage can be found in /firmware/examples, structured as a simple A
 
 ##Background
 This library is a port from Nordic Semiconductor's [Bluetooth Low Energy for Arduino SDK](https://github.com/NordicSemiconductor/ble-sdk-arduino "Go to BLE for Arduino GitHub repository").
-Tested with the RedBearLab Bluetooth Low Energy Shield v2.0
+Tested with the RedBearLab Bluetooth Low Energy Shield v2.0.
 
 ##Connecting the nRF8001 to the Spark Core
 The nRF8001 communicates with the Spark Core via SPI, acting like a slave.
@@ -39,6 +39,8 @@ You have to open the COM-port to the Spark Core before you either flash or reset
 
 Set up your terminal application with the following parameters:
 
+| Field | Value |
+|-------|-------|
 | Port: | The COM-port your Spark Core is on. If you have the Spark CLI, this can be found with the command line command "spark serial list" |
 | Baud rate: | 115200 |
 | Data bits: | 8 |
@@ -60,6 +62,9 @@ The example can be used with the "nRF UART 2.0" app for Android, available in th
 ###Using the example with the App
 
 Open the nRF UART 2.0 app, and press the "Connect" button near the top of the screen. You'll see a list of available BLE devices in your area. Press the "Spark Core". The app should show the message "Spark Core says hello!". This means you have a connection, and you can start communicating with your Spark Core.
+
+##The next steps
+You can use the interface functions in the nrf8001-ble-uart-spark-io.h file to communicate with the nrf8001.
 
 ##Forum
 [Nordic Developer Zone](http://devzone.nordicsemi.com/ "Go to Nordic developer zone")
