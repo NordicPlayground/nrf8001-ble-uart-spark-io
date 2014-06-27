@@ -29,7 +29,6 @@
 
 static void m_aci_data_print(hal_aci_data_t *p_data);
 static void m_aci_event_check(void);
-static void m_aci_isr(void);
 static void m_aci_pins_set(aci_pins_t *a_pins_ptr);
 static inline void m_aci_reqn_disable (void);
 static inline void m_aci_reqn_enable (void);
@@ -57,52 +56,6 @@ void m_aci_data_print(hal_aci_data_t *p_data)
     Serial.print(F(", "));
   }
   Serial.println(F(""));
-}
-
-/*
-  Interrupt service routine called when the RDYN line goes low. Runs the SPI transfer.
-*/
-static void m_aci_isr(void)
-{
-  hal_aci_data_t data_to_send;
-  hal_aci_data_t received_data;
-
-  // Receive from queue
-  if (!aci_queue_dequeue_from_isr(&aci_tx_q, &data_to_send))
-  {
-    /* queue was empty, nothing to send */
-    data_to_send.status_byte = 0;
-    data_to_send.buffer[0] = 0;
-  }
-
-  // Receive and/or transmit data
-  m_aci_spi_transfer(&data_to_send, &received_data);
-
-  if (!aci_queue_is_full_from_isr(&aci_rx_q) && !aci_queue_is_empty_from_isr(&aci_tx_q))
-  {
-    m_aci_reqn_enable();
-  }
-
-  // Check if we received data
-  if (received_data.buffer[0] > 0)
-  {
-    if (!aci_queue_enqueue_from_isr(&aci_rx_q, &received_data))
-    {
-      /* Receive Buffer full.
-         Should never happen.
-         Spin in a while loop.
-      */
-      while(1);
-    }
-
-    // Disable ready line interrupt until we have room to store incoming messages
-    if (aci_queue_is_full_from_isr(&aci_rx_q))
-    {
-      detachInterrupt(a_pins_local_ptr->interrupt_number);
-    }
-  }
-
-  return;
 }
 
 /*
@@ -240,7 +193,7 @@ void hal_aci_tl_debug_print(bool enable)
 
 void hal_aci_tl_pin_reset(void)
 {
-	if (UNUSED != a_pins_local_ptr->reset_pin)
+	if (NRF_UNUSED != a_pins_local_ptr->reset_pin)
 	{
 		pinMode(a_pins_local_ptr->reset_pin, OUTPUT);
 
@@ -322,7 +275,7 @@ void hal_aci_tl_init(aci_pins_t *a_pins, bool debug)
   pinMode(a_pins->rdyn_pin,		INPUT_PULLUP);
   pinMode(a_pins->reqn_pin,		OUTPUT);
 
-  if (UNUSED != a_pins->active_pin)
+  if (NRF_UNUSED != a_pins->active_pin)
   {
     pinMode(a_pins->active_pin,	INPUT);
   }

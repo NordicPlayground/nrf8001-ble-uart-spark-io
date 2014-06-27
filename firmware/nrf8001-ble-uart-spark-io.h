@@ -32,27 +32,64 @@
 *
 * 
 * 
-* The pin mappings for the SPI connection to the nRF8001 is as follows:
+* The default pin mappings for the SPI connection to the nRF8001 is as follows:
 * 
 *
 * nrf8001		- Spark Core	-	Explanation
 *
 * MOSI 			- A5					- SPI Master Out, Slave In
 * MISO			- A4					- SPI Master In, Slave Out
-* CLK				- A3 					- SPI Bus clock
+* SCK				- A3 					- SPI Bus clock (may be represented as CLK on your board, depending on version)
 * REQN			- D4					- SPI Master request line
 * RDYN			- D3					- SPI Slave ready line
 * RESET			- D2					- nRF8001 reset signal (triggered in the library setup)
+* VIN				- 3V3					- nRF8001 power 
+* GND				- GND					- Common ground
 */
+
+
+
+
+
 
 
 
 /**
 * Setup routine for all BLE UART related functionality
 * Should be executed in the setup() function in the project sketch
+* Sets the default pin configuration.
 */
 void nRF8001BleUartSetup(void);
 
+/**
+* Setup routing for all BLE UART related functionality
+* Should be executed in the setup() function in the project sketch
+* Allows the user to set up a custom pin configuration for the nRF8001 interface. 
+* 
+* Example usage: 
+* nRF8001BleUartSetup(A5, A4, A3, D4, D3, D2); // default configuration
+*
+* NOTE: Not all pin configurations are guaranteed to work, and it is recommended to 
+* stick to the default configuration.
+*/
+void nRF8001BleUartSetup(	uint8_t pin_mosi, 
+													uint8_t pin_miso, 
+													uint8_t pin_sck, 
+													uint8_t pin_reqn, 
+													uint8_t pin_rdyn, 
+													uint8_t pin_reset);
+
+													
+													
+													
+													
+													
+													
+													
+					
+
+
+					
 /**
 * Loop function, taking care of all BLE UART communication
 * All incoming BLE events and UART messages are processed in this function.
@@ -60,10 +97,41 @@ void nRF8001BleUartSetup(void);
 */
 void nRF8001BleUartLoop(void);
 
+
+
+
+
+
 /**
 * Public interface for sending data through the BLE UART
 */
 bool nRF8001BleUartTx(uint8_t *buffer, uint8_t buffer_len);
+
+
+
+
+
+
+
+
+
+
+/**
+* Function to set the device's on-air name, that will be visible for any devices
+* that wish to connect to the Spark Core.
+* The device name may not be longer than 16 bytes.
+*/
+void nRF8001BleUartNameSet(const char* device_name, uint8_t name_length);
+
+
+
+
+
+
+
+
+
+
 
 /**
 * Callback function for incoming UART messages
@@ -72,6 +140,24 @@ bool nRF8001BleUartTx(uint8_t *buffer, uint8_t buffer_len);
 * Implemented by user
 */
 void nRF8001BleUartRx(uint8_t *buffer, uint8_t len);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #endif /*NRF8001_BLE_UART_SPARK_IO_H__*/

@@ -98,12 +98,6 @@ bool lib_aci_is_discovery_finished(aci_state_t *aci_stat)
   return(aci_stat->pipes_open_bitmap[0]&0x01);
 }
 
-void lib_aci_board_init(aci_state_t *aci_stat)
-{
-	hal_aci_evt_t *aci_data = NULL;
-	aci_data = (hal_aci_evt_t *)&msg_to_send;
-}
-
 
 void lib_aci_init(aci_state_t *aci_stat, bool debug)
 {
@@ -140,7 +134,6 @@ void lib_aci_init(aci_state_t *aci_stat, bool debug)
   
   hal_aci_tl_init(&aci_stat->aci_pins, debug);
   
-  lib_aci_board_init(aci_stat);
 }
 
 

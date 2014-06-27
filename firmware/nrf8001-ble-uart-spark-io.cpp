@@ -80,8 +80,13 @@ The ACI Evt Data Credit provides the radio level ack of a transmitted packet.
 
 static const hal_aci_data_t setup_msgs[NB_SETUP_MESSAGES] = SETUP_MESSAGES_CONTENT;
 
-
 void nRF8001BleUartSetup(void)
+{
+	nRF8001BleUartSetup(A5, A4, A3, D4, D3, D2); // default configuration
+}
+
+
+void nRF8001BleUartSetup(uint8_t pin_mosi, uint8_t pin_miso, uint8_t pin_sck, uint8_t pin_reqn, uint8_t pin_rdyn, uint8_t pin_reset)
 {
 	Serial.println(F("Spark Core Setup"));
 	Serial.println(F("Set line ending to newline to send data from the serial monitor"));
@@ -103,20 +108,20 @@ void nRF8001BleUartSetup(void)
 
   /*
   Tell the ACI library, the MCU to nRF8001 pin connections.
-  The Active pin is optional and can be marked UNUSED
+  The Active pin is optional and can be marked NRF_UNUSED
   */
   aci_state.aci_pins.board_name = BOARD_DEFAULT; //See board.h for details 
-  aci_state.aci_pins.reqn_pin   = D4; 
-  aci_state.aci_pins.rdyn_pin   = D3; 
-  aci_state.aci_pins.mosi_pin   = MOSI;
-  aci_state.aci_pins.miso_pin   = MISO;
-  aci_state.aci_pins.sck_pin    = SCK;
+  aci_state.aci_pins.mosi_pin   = pin_mosi;
+  aci_state.aci_pins.miso_pin   = pin_miso;
+  aci_state.aci_pins.reqn_pin   = pin_reqn; 
+  aci_state.aci_pins.rdyn_pin   = pin_rdyn; 
+  aci_state.aci_pins.sck_pin    = pin_sck;
+  aci_state.aci_pins.reset_pin  = pin_reset;
 
   aci_state.aci_pins.spi_clock_divider      = SPI_CLOCK_DIV8;//SPI_CLOCK_DIV8  = 2MHz SPI speed
                                                              //SPI_CLOCK_DIV16 = 1MHz SPI speed
   
-  aci_state.aci_pins.reset_pin              = D2;
-  aci_state.aci_pins.active_pin             = UNUSED;
+  aci_state.aci_pins.active_pin             = NRF_UNUSED;
   aci_state.aci_pins.optional_chip_sel_pin  = SS;
 
   aci_state.aci_pins.interface_is_interrupt = false; //Interrupts still not available in Spark Core
@@ -130,6 +135,25 @@ void nRF8001BleUartSetup(void)
 	
 	Serial.println(F("SETUP DONE"));
 }
+
+void nRF8001BleUartNameSet(const char* device_name, uint8_t name_length)
+{
+	if (lib_aci_set_local_data(&aci_state, PIPE_GAP_DEVICE_NAME_SET, (uint8_t*) device_name, min(name_length, 16)))
+	{
+		Serial.print("Name set. New name: ");
+		for (uint8_t i = 0; i < min(name_length, 16); ++i)
+		{
+			Serial.print(device_name[i]);
+		}
+		Serial.println();
+	}
+	else
+	{
+		Serial.println("Name setting failed.");
+	}
+}
+
+
 
 bool nRF8001BleUartTx(uint8_t *buffer, uint8_t buffer_len)
 {

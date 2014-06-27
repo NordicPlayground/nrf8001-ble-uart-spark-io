@@ -53,7 +53,7 @@ and the received ACI event is placed in the tail of the event queue.
 /************************************************************************/
 /* Unused nRF8001 pin                                                    */
 /************************************************************************/
-#define UNUSED		    255
+#define NRF_UNUSED		    255
 
 /** Data type for ACI commands and events */
 typedef struct {
@@ -75,8 +75,8 @@ typedef struct aci_pins_t
 	
 	uint8_t spi_clock_divider;      //Required : Clock divider on the SPI clock : nRF8001 supports a maximum clock of 3MHz
 	
-	uint8_t	reset_pin;				//Recommended but optional - Set it to UNUSED when not connected
-	uint8_t active_pin;				//Optional - Set it to UNUSED when not connected
+	uint8_t	reset_pin;				//Recommended but optional - Set it to NRF_UNUSED when not connected
+	uint8_t active_pin;				//Optional - Set it to NRF_UNUSED when not connected
 	uint8_t optional_chip_sel_pin;  //Optional - Used only when the reqn line is required to be separate from the SPI chip select. Eg. Arduino DUE
 	
 	bool	interface_is_interrupt;	//Required - true = Uses interrupt on RDYN pin. false - Uses polling on RDYN pin

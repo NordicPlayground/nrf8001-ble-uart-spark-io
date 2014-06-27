@@ -25,8 +25,12 @@ Connect the Spark Core to the RedBearLab Bluetooth Low Energy Shield using this 
 | VIN				| 3V3					| Main voltage supply for the nRF8001 |
 | GND				| GND					| Voltage supply for the nRF8001 radio |
 
+You may initialize the library with other pin configurations, but some configurations may not work.
+
 ##Running the example
 The library contains an example Sketch called "nrf8001-ble-uart.ino". This example displays the most basic use case for the library, and lets you communicate with a terminal application on your computer through the Spark Core over BLE.
+
+The example also shows how you can change the on-air name of the device with the nRF8001BleUartNameSet() function. Note that the name change may not appear in the Android UART application before you disconnect and connect again.
 
 ###Terminal 
 You will need a two way terminal application on your computer in order to communicate with the Spark Core (You can use [Termite](http://www.compuphase.com/software_termite.htm "Go to the Termite project home page") from Compu Phase, it is free)
@@ -51,9 +55,7 @@ Copy the code in "nrf8001-ble-uart.ino" over to your project sketch, and flash i
 
 Your Spark Core should start flashing purple for a while, and start breathing cyan. This means it's active, and if you've done everything right, it should be on air!
 
-
-
-The example can be used with the "nRF UART 2.0" app for iOS/Android, available in the Apple App Store and Google Play Store. Note that this app requires a BLE-compliant device.
+The example can be used with the "nRF UART 2.0" app for Android, available in the Google Play Store. Note that this app requires a BLE-compliant device. 
 
 ###Using the example with the App
 

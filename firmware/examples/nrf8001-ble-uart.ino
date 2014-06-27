@@ -27,9 +27,20 @@
 * The nRF8001BleUartRx function is not implemented in the library itself, and 
 * should be handled as a callback function for any incoming messages over the BLE UART
 * 
+* The example demonstrates how you can use the library to send and receive messages over UART.
+* It also demonstrates the nRF8001BleUartNameSet() function, that dynamically can change the on-air 
+* device name.
 * 
 */
-#include "nrf8001-ble-uart-spark-io.h"
+
+/**
+* This include is not necessary in the Spark.io build IDE, as it is added automatically 
+* when you include the library in your project.
+*/
+//#include "nrf8001-ble-uart-spark-io.h"
+
+
+
 
 /**
 * The data to be sent via the BLE UART is first stored in a 
@@ -39,6 +50,14 @@
 #define SERIAL_BUFFER_LENGTH 32
 
 static uint8_t serial_buffer[SERIAL_BUFFER_LENGTH];
+
+/**
+* A macro that checks for a name=xxxx command from the terminal.
+*/
+#define IS_NAME_SETTING(buf) (memcmp((void*) buf, (void*) "name=", 5) == 0)
+
+
+
 
 
 /**
@@ -62,10 +81,10 @@ void setup(void)
 	
 	// The USB serial on the Spark Core may take  
 	// a second to set up:
-	delay(1000);
-	
+	delay(3000);
 	// Do the BLE UART setup:
 	nRF8001BleUartSetup();
+	
 	
 	// Clear the serial buffer:
 	clear_serial_buffer();	
@@ -91,7 +110,7 @@ void nRF8001BleUartRx(uint8_t *buffer, uint8_t len)
 
 /**
 * Function for polling USB serial. Make sure the terminal ends 
-* message with a newline ("\n")
+* message with a newline ('\n')
 */
 void handle_serial_input()
 {
@@ -107,7 +126,22 @@ void handle_serial_input()
 		if ('\n' == serial_buffer[msg_length - 1] || 
 							SERIAL_BUFFER_LENGTH == msg_length)
 		{
-			nRF8001BleUartTx(serial_buffer, msg_length - 1);
+			// check if the input is the name=xxxx command. 
+			if (IS_NAME_SETTING(serial_buffer))
+			{
+			
+				//copy name into new, small buffer.
+				char name_buf[msg_length - 6];
+				memcpy(name_buf, &serial_buffer[5], msg_length - 6);
+			
+				//set name
+				nRF8001BleUartNameSet(name_buf, msg_length - 6);
+			}
+			else
+			{
+				//input was not a name setting, send it over BLE UART.
+				nRF8001BleUartTx(serial_buffer, msg_length - 1);
+			}
 			
 			// Prepare the buffer for the next message:
 			clear_serial_buffer();
