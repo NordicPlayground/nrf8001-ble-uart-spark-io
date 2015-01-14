@@ -57,11 +57,11 @@ Copy the code in "nrf8001-ble-uart.ino" over to your project sketch, and flash i
 
 Your Spark Core should start flashing purple for a while, and start breathing cyan. This means it's active, and if you've done everything right, it should be on air!
 
-The example can be used with the "nRF UART 2.0" app for Android, available in the Google Play Store. Note that this app requires a BLE-compliant device. 
+The example can be used with the "nRF UART 2.0" app for Android, available in the Google Play Store, or the "nRF UART" app for iOS, available in the iTunes App Store. Note that this app requires a BLE-compliant device. 
 
 ###Using the example with the App
 
-Open the nRF UART app for Android or iOS (available in the Google Play Store and iTunes App store), and press the "Connect" button near the top of the screen. For the Android application, you'll see a list of available BLE devices in your area. Press your "Spark" device in the list to connect to it. For the iOS application, you may have to press the button until it says "Scanning...", the application will then automatically connect to the nearest Spark. The app should show the message "Connected to: Spark" or similar. You can now start communicating with your Spark Core.
+Open the nRF UART app for Android or iOS, and press the "Connect" button near the top of the screen. For the Android application, you'll see a list of available BLE devices in your area. Press your "Spark" device in the list to connect to it. For the iOS application, you may have to press the button until it says "Scanning...", the application will then automatically connect to the nearest Spark. The app should show the message "Connected to: Spark" or similar. You can now start communicating with your Spark Core.
 
 ##The next steps
 You can use the interface functions in the nrf8001-ble-uart-spark-io.h file to communicate with the nrf8001.
