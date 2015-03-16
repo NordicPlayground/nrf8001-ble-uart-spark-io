@@ -55,8 +55,13 @@ static uint8_t         uart_buffer[20];
 static uint8_t         uart_buffer_len = 0;
 static uint8_t         dummychar = 0;
 
+int initDone = 0;
+
 int set_val(String args){
 
+    if(!initDone){
+        return -1;
+    }
 
     uint8_t handle = args[0] - '0';
     uint8_t value  = args[1] - '0';
@@ -69,12 +74,10 @@ int set_val(String args){
     return rbc_mesh_value_set(handle, &value, (uint8_t) 1);
 }
 
-int tmp = 4;
-
 void setup(void)
 {
   Serial.begin(9600);
-  
+
   pins.board_name = BOARD_DEFAULT; //See board.h for details REDBEARLAB_SHIELD_V1_1 or BOARD_DEFAULT
   pins.reqn_pin   = D4; //SS for Nordic board, 9 for REDBEARLAB_SHIELD_V1_1
   pins.rdyn_pin   = D3; //3 for Nordic board, 8 for REDBEARLAB_SHIELD_V1_1
@@ -82,9 +85,11 @@ void setup(void)
   pins.miso_pin   = A4;
   pins.sck_pin    = A3;
 
-  pins.spi_clock_divider      = SPI_CLOCK_DIV64; //SPI_CLOCK_DIV8  = 2MHz SPI speed
+  pins.spi_clock_divider      = SPI_CLOCK_DIV16; //SPI_CLOCK_DIV8  = 2MHz SPI speed
                                                  //SPI_CLOCK_DIV16 = 1MHz SPI speed
-  
+                                                 //if you are having trouble with the connection this might be the reason
+                                                 //you might want SPI_CLOCK_DIV64 = 256 KHz
+
   pins.reset_pin              = D2; //4 for Nordic board, UNUSED for REDBEARLAB_SHIELD_V1_1
   pins.active_pin             = NRF_UNUSED;
   pins.optional_chip_sel_pin  = NRF_UNUSED;
@@ -93,9 +98,9 @@ void setup(void)
   pins.interrupt_number       = 1;
 
   rbc_mesh_hw_init(&pins);
- 
+
   Spark.function("set_val", set_val);
-  Spark.variable("tmp", &tmp, INT);
+  Spark.variable("initDone", &initDone, INT);
 
   return;
 }
@@ -123,14 +128,16 @@ void initConnectionSlowly(){
         case 4:
             initState++;
             rbc_mesh_value_enable((uint8_t) 2);
+            initDone = 1;
             Serial.println("init done");
     }
 }
 
 
 void loop() {
-    initConnectionSlowly();
-
+    if(!initDone){
+        initConnectionSlowly();
+    }
     //Process any ACI commands or events
     hal_aci_data_t evnt;
     newMessage = rbc_mesh_evt_get(&evnt);
