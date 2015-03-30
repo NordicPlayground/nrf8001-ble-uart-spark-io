@@ -1,83 +1,74 @@
-// This #include statement was automatically added by the Spark IDE.
-#include "rbc_mesh_interface.h"
-
-// This #include statement was automatically added by the Spark IDE.
-//#include "nrf8001-ble-uart-spark-io/nrf8001-ble-uart-spark-io.h"
-
-/***********************************************************************************
-Copyright (c) Nordic Semiconductor ASA
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-  1. Redistributions of source code must retain the above copyright notice, this
-  list of conditions and the following disclaimer.
-
-  2. Redistributions in binary form must reproduce the above copyright notice, this
-  list of conditions and the following disclaimer in the documentation and/or
-  other materials provided with the distribution.
-
-  3. Neither the name of Nordic Semiconductor ASA nor the names of other
-  contributors to this software may be used to endorse or promote products
-  derived from this software without specific prior written permission.
-
-  4. This software must only be used in a processor manufactured by Nordic
-  Semiconductor ASA, or in a processor manufactured by a third party that
-  is used in combination with a processor manufactured by Nordic Semiconductor.
-
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-************************************************************************************/
+/* Copyright (c) 2014, Nordic Semiconductor ASA
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 // send commands with
 // curl https://api.spark.io/v1/devices/[ID]/set_val -d access_token=[token] -d "args=11"
 
-//#include <SPI.h>
 #include "nrf8001-ble-uart-spark-io/lib_aci.h"
 #include "nrf8001-ble-uart-spark-io/boards.h"
 
 #include "rbc_mesh_interface.h"
 
 
-static aci_pins_t pins;
+enum state_t{
+    init,
+    ready,
+    waitingForEvent
+};
 
-static uint8_t         uart_buffer[20];
-static uint8_t         uart_buffer_len = 0;
-static uint8_t         dummychar = 0;
+int state = init;
 
-int initDone = 0;
+int lastResponse;
 
 int set_val(String args){
 
-    if(!initDone){
+    if(state != ready){
         return -1;
     }
+    state = waitingForEvent;
 
     uint8_t handle = args[0] - '0';
     uint8_t value  = args[1] - '0';
     
-   // Serial.print("will send ");
-    //7Serial.print(handle);
-    //Serial.print(" ");
-    //Serial.println(value);
-    
     return rbc_mesh_value_set(handle, &value, (uint8_t) 1);
 }
+
+int get_val_req(String args){
+
+    if(state != ready){
+        return -1;
+    }
+    state = waitingForEvent;
+
+    uint8_t handle = args[0] - '0';
+    
+    return rbc_mesh_value_get(handle);
+}
+
+aci_pins_t pins;
 
 void setup(void)
 {
   Serial.begin(9600);
-
+  
   pins.board_name = BOARD_DEFAULT; //See board.h for details REDBEARLAB_SHIELD_V1_1 or BOARD_DEFAULT
   pins.reqn_pin   = D4; //SS for Nordic board, 9 for REDBEARLAB_SHIELD_V1_1
   pins.rdyn_pin   = D3; //3 for Nordic board, 8 for REDBEARLAB_SHIELD_V1_1
@@ -85,7 +76,7 @@ void setup(void)
   pins.miso_pin   = A4;
   pins.sck_pin    = A3;
 
-  pins.spi_clock_divider      = SPI_CLOCK_DIV16; //SPI_CLOCK_DIV8  = 2MHz SPI speed
+  pins.spi_clock_divider      = SPI_CLOCK_DIV64; //SPI_CLOCK_DIV8  = 2MHz SPI speed
                                                  //SPI_CLOCK_DIV16 = 1MHz SPI speed
                                                  //if you are having trouble with the connection this might be the reason
                                                  //you might want SPI_CLOCK_DIV64 = 256 KHz
@@ -100,7 +91,9 @@ void setup(void)
   rbc_mesh_hw_init(&pins);
 
   Spark.function("set_val", set_val);
-  Spark.variable("initDone", &initDone, INT);
+  Spark.function("get_val_req", get_val_req);
+  Spark.variable("state", &state, INT);
+  Spark.variable("lastResponse", &lastResponse, INT);
 
   return;
 }
@@ -116,30 +109,36 @@ void initConnectionSlowly(){
             initState++;
             break;
         case 1:
-            if(newMessage) initState++;
+            if(newMessage){
+                rbc_mesh_value_enable((uint8_t) 1);
+                initState++;
+            }
             break;
         case 2:
-            rbc_mesh_value_enable((uint8_t) 1);
-            initState++;
+            if(newMessage){
+                rbc_mesh_value_enable((uint8_t) 2);
+                initState++;
+            }
             break;
         case 3:
-            if(newMessage) initState++;
-            break;
-        case 4:
-            initState++;
-            rbc_mesh_value_enable((uint8_t) 2);
-            initDone = 1;
-            Serial.println("init done");
+            if(newMessage){
+                state = ready;
+                Serial.println("init done");
+            }
     }
 }
 
-
 void loop() {
-    if(!initDone){
+    if(state == init){
         initConnectionSlowly();
     }
     //Process any ACI commands or events
     hal_aci_data_t evnt;
     newMessage = rbc_mesh_evt_get(&evnt);
 
+    if(state == waitingForEvent && newMessage){
+        state = ready;
+        
+        lastResponse = evnt.buffer[evnt.buffer[0]];
+    }
 }
