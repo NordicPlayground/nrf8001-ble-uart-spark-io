@@ -26,6 +26,7 @@
 #include "nrf8001-ble-uart-spark-io/boards.h"
 
 #include "nrf8001-ble-uart-spark-io/rbc_mesh_interface.h"
+#include "nrf8001-ble-uart-spark-io/serial_evt.h"
 
 
 enum state_t{
@@ -102,10 +103,11 @@ int initState = 0;
 bool newMessage = false;
 
 void initConnectionSlowly(){
-    uint8_t accAddr[4] = {0x8f, 0xa6, 0x41,0xa5 };
+    uint32_t accAddr = 0xA541A68F;
     switch(initState) {
         case 0:
-            rbc_mesh_init(accAddr, (uint8_t) 38, (uint8_t) 2);
+            rbc_mesh_init(accAddr, (uint8_t) 38, (uint8_t) 2, (uint32_t) 0x64000000); // 100 as little endian, spark is big endian
+
             initState++;
             break;
         case 1:
@@ -133,12 +135,17 @@ void loop() {
         initConnectionSlowly();
     }
     //Process any ACI commands or events
-    hal_aci_data_t evnt;
+    serial_evt_t evnt;
     newMessage = rbc_mesh_evt_get(&evnt);
 
-    if(state == waitingForEvent && newMessage){
+    if(state == waitingForEvent && newMessage
+        && evnt.opcode == SERIAL_EVT_OPCODE_CMD_RSP){
         state = ready;
         
-        lastResponse = evnt.buffer[evnt.buffer[0]];
+        lastResponse = evnt.params.cmd_rsp.response.val_get.data[0];
     }
+    
+    Serial.print(state);
+    Serial.print("  ");
+    Serial.println(initState);
 }
