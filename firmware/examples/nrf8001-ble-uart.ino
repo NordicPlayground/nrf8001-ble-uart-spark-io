@@ -33,14 +33,7 @@
 * 
 */
 
-/**
-* This include is not necessary in the Spark.io build IDE, as it is added automatically 
-* when you include the library in your project.
-*/
-//#include "nrf8001-ble-uart-spark-io.h"
-
-
-
+#include "nrf8001-ble-uart-spark-io/nrf8001-ble-uart-spark-io.h"
 
 /**
 * The data to be sent via the BLE UART is first stored in a 

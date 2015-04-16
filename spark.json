@@ -3,5 +3,5 @@
   "author": "Nordic Semiconductor ASA",
   "license": "MIT",
   "version": "0.6.1",
-  "description": "A library for using the Nordic Semiconductor nRF8001 board as a BLE UART. Can be used to send WiFi credentials to the Spark Core from a phone. See GitHub repository for instructions on wiring."
+  "description": "A library for using the Nordic Semiconductor nRF8001 board as a BLE UART or as BLE mesh entry point. Can be used to send WiFi credentials to the Spark Core from a phone. See GitHub repository for instructions on wiring."
 }
