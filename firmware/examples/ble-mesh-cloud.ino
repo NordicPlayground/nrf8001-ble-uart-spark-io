@@ -25,7 +25,7 @@
 #include "nrf8001-ble-uart-spark-io/lib_aci.h"
 #include "nrf8001-ble-uart-spark-io/boards.h"
 
-#include "rbc_mesh_interface.h"
+#include "nrf8001-ble-uart-spark-io/rbc_mesh_interface.h"
 
 
 enum state_t{
