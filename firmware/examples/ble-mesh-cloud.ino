@@ -29,16 +29,19 @@
 #include "nrf8001-ble-uart-spark-io/serial_evt.h"
 
 
+// defining the state of the system for communication
 enum state_t{
-    init,
-    ready,
-    waitingForEvent
+    init,           // not yet initialized
+    ready,          // no external command in work
+    waitingForEvent // external command in work, waiting for answer from SPI slave
 };
 
 int state = init;
 
+// buffer for the last value send by the SPI slave
 int lastResponse;
 
+// callback function for http command to set a handle value
 int set_val(String args){
 
     if(state != ready){
@@ -52,6 +55,7 @@ int set_val(String args){
     return rbc_mesh_value_set(handle, &value, (uint8_t) 1);
 }
 
+// callback function for http command to get a handle value
 int get_val_req(String args){
 
     if(state != ready){
@@ -66,6 +70,7 @@ int get_val_req(String args){
 
 aci_pins_t pins;
 
+// arduino conform init function
 void setup(void)
 {
   Serial.begin(9600);
@@ -99,6 +104,8 @@ void setup(void)
   return;
 }
 
+// sending intialization commands to SPI slave
+// alternating sending of commands and waiting for response
 int initState = 0;
 bool newMessage = false;
 
@@ -130,7 +137,10 @@ void initConnectionSlowly(){
     }
 }
 
+// arduino conform main loop
 void loop() {
+
+    // send next initialization command to SPI slave until we leave init state
     if(state == init){
         initConnectionSlowly();
     }
@@ -142,10 +152,12 @@ void loop() {
         && evnt.opcode == SERIAL_EVT_OPCODE_CMD_RSP){
         state = ready;
         
+        // save the response value of SPI slave into buffer
+        // can be read via callback function
         lastResponse = evnt.params.cmd_rsp.response.val_get.data[0];
     }
     
-    Serial.print(state);
-    Serial.print("  ");
-    Serial.println(initState);
+    //Serial.print(state);
+    //Serial.print("  ");
+    //Serial.println(initState);
 }
