@@ -76,18 +76,18 @@ void setup(void)
   Serial.begin(9600);
   
   pins.board_name = BOARD_DEFAULT; //See board.h for details REDBEARLAB_SHIELD_V1_1 or BOARD_DEFAULT
-  pins.reqn_pin   = D4; //SS for Nordic board, 9 for REDBEARLAB_SHIELD_V1_1
-  pins.rdyn_pin   = D3; //3 for Nordic board, 8 for REDBEARLAB_SHIELD_V1_1
+  pins.reqn_pin   = A2;
+  pins.rdyn_pin   = D5;
   pins.mosi_pin   = A5;
   pins.miso_pin   = A4;
   pins.sck_pin    = A3;
 
-  pins.spi_clock_divider      = SPI_CLOCK_DIV64; //SPI_CLOCK_DIV8  = 2MHz SPI speed
+  pins.spi_clock_divider      = SPI_CLOCK_DIV8; //SPI_CLOCK_DIV8  = 2MHz SPI speed
                                                  //SPI_CLOCK_DIV16 = 1MHz SPI speed
                                                  //if you are having trouble with the connection this might be the reason
                                                  //you might want SPI_CLOCK_DIV64 = 256 KHz
 
-  pins.reset_pin              = D2; //4 for Nordic board, UNUSED for REDBEARLAB_SHIELD_V1_1
+  pins.reset_pin              = D2;
   pins.active_pin             = NRF_UNUSED;
   pins.optional_chip_sel_pin  = NRF_UNUSED;
 
