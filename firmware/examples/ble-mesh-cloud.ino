@@ -82,10 +82,9 @@ void setup(void)
   pins.miso_pin   = A4;
   pins.sck_pin    = A3;
 
-  pins.spi_clock_divider      = SPI_CLOCK_DIV8; //SPI_CLOCK_DIV8  = 2MHz SPI speed
-                                                 //SPI_CLOCK_DIV16 = 1MHz SPI speed
-                                                 //if you are having trouble with the connection this might be the reason
-                                                 //you might want SPI_CLOCK_DIV64 = 256 KHz
+  pins.spi_clock_divider      = SPI_CLOCK_DIV64; //SPI_CLOCK_DIV8  = 8MHz SPI speed
+                                                 //SPI_CLOCK_DIV16 = 4MHz SPI speed
+                                                 //SPI_CLOCK_DIV64 = 1MHz SPI speed
 
   pins.reset_pin              = D2;
   pins.active_pin             = NRF_UNUSED;
