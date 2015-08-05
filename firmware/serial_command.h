@@ -82,7 +82,7 @@ typedef struct
 {
 	uint8_t length;
 	uint8_t opcode;
-    __packed union
+    union
     {
         serial_cmd_params_echo_t            echo;
         serial_cmd_params_init_t            init;
@@ -90,7 +90,7 @@ typedef struct
         serial_cmd_params_value_enable_t   value_enable;
         serial_cmd_params_value_disable_t   value_disable;
         serial_cmd_params_value_get_t       value_get;
-    } params;
+    } __packed params;
 } __packed serial_cmd_t;
 
 

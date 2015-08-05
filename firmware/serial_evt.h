@@ -92,7 +92,7 @@ typedef struct
 {
     uint8_t command_opcode;
     aci_status_code_t status;
-    __packed union
+    union
     {
         serial_evt_cmd_rsp_params_build_version_t build_version;
         serial_evt_cmd_rsp_params_access_addr_t access_addr;
@@ -100,7 +100,7 @@ typedef struct
         serial_evt_cmd_rsp_params_handle_count_t handle_count;
         serial_evt_cmd_rsp_params_adv_int_t adv_int;
         serial_evt_cmd_rsp_params_val_get_t val_get;
-    } response;        
+    } __packed response;        
 } __packed serial_evt_params_cmd_rsp_t;
 
 typedef struct
@@ -132,14 +132,14 @@ typedef struct
 {
     uint8_t length;
 	uint8_t opcode;
-	__packed union
+	union
 	{
 		serial_evt_params_echo_t echo;
         serial_evt_params_cmd_rsp_t cmd_rsp;
         serial_evt_params_event_new_t event_new;
         serial_evt_params_event_update_t event_update;
         serial_evt_params_event_conflicting_t event_conflicting;
-	} params;
+	} __packed params;
 } __packed serial_evt_t;
 
 
