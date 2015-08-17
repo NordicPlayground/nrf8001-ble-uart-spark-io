@@ -22,11 +22,11 @@
 // send commands with
 // curl https://api.spark.io/v1/devices/[ID]/set_val -d access_token=[token] -d "args=11"
 
-#include "lib_aci.h"
-#include "boards.h"
+#include "nrf8001-ble-uart-spark-io/lib_aci.h"
+#include "nrf8001-ble-uart-spark-io/boards.h"
 
-#include "rbc_mesh_interface.h"
-#include "serial_evt.h"
+#include "nrf8001-ble-uart-spark-io/rbc_mesh_interface.h"
+#include "nrf8001-ble-uart-spark-io/serial_evt.h"
 
 #define ACCESS_ADDR     (0xA541A68F)
 
