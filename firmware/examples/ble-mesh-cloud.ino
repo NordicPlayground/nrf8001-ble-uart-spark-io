@@ -22,12 +22,13 @@
 // send commands with
 // curl https://api.spark.io/v1/devices/[ID]/set_val -d access_token=[token] -d "args=11"
 
-#include "nrf8001-ble-uart-spark-io/lib_aci.h"
-#include "nrf8001-ble-uart-spark-io/boards.h"
+#include "lib_aci.h"
+#include "boards.h"
 
-#include "nrf8001-ble-uart-spark-io/rbc_mesh_interface.h"
-#include "nrf8001-ble-uart-spark-io/serial_evt.h"
+#include "rbc_mesh_interface.h"
+#include "serial_evt.h"
 
+#define ACCESS_ADDR     (0xA541A68F)
 
 // defining the state of the system for communication
 enum state_t{
@@ -40,6 +41,8 @@ int state = init;
 
 // buffer for the last value send by the SPI slave
 int lastResponse;
+
+int initState = 0;
 
 // callback function for http command to set a handle value
 int set_val(String args){
@@ -105,58 +108,56 @@ void setup(void)
 
 // sending intialization commands to SPI slave
 // alternating sending of commands and waiting for response
-int initState = 0;
-bool newMessage = false;
-
 void initConnectionSlowly(){
-    uint32_t accAddr = 0xA541A68F;
     switch(initState) {
         case 0:
-            rbc_mesh_init(accAddr, (uint8_t) 38, (uint8_t) 2, (uint32_t) 0x64000000); // 100 as little endian, spark is big endian
-
+            rbc_mesh_init(ACCESS_ADDR, (uint8_t) 38, (uint8_t) 2, (uint32_t) 100);
             initState++;
+            Serial.println("Sent init command");
             break;
         case 1:
-            if(newMessage){
-                rbc_mesh_value_enable((uint8_t) 1);
-                initState++;
-            }
+            rbc_mesh_value_enable((uint8_t) 1);
+            initState++;
+            Serial.println("Enabled value 1");
             break;
         case 2:
-            if(newMessage){
-                rbc_mesh_value_enable((uint8_t) 2);
-                initState++;
-            }
+            rbc_mesh_value_enable((uint8_t) 2);
+            initState++;
+            Serial.println("Enabled value 2");
             break;
         case 3:
-            if(newMessage){
-                state = ready;
-                Serial.println("init done");
-            }
+            state = ready;
+            Serial.println("init done");
     }
 }
 
 // arduino conform main loop
 void loop() {
-
+    static bool newMessage = false;
     // send next initialization command to SPI slave until we leave init state
-    if(state == init){
+    if (state == init && newMessage) {
         initConnectionSlowly();
     }
+    
     //Process any ACI commands or events
     serial_evt_t evnt;
     newMessage = rbc_mesh_evt_get(&evnt);
 
-    if(state == waitingForEvent && newMessage
-        && evnt.opcode == SERIAL_EVT_OPCODE_CMD_RSP){
-        state = ready;
-        
-        // save the response value of SPI slave into buffer
-        // can be read via callback function
-        lastResponse = evnt.params.cmd_rsp.response.val_get.data[0];
+    if(newMessage && evnt.opcode == SERIAL_EVT_OPCODE_CMD_RSP){
+        if (evnt.params.cmd_rsp.status != ACI_STATUS_SUCCESS)
+        {
+            Serial.print("Error response on cmd ");
+            Serial.print(evnt.params.cmd_rsp.command_opcode, HEX);
+            Serial.print(": ");
+            Serial.print(evnt.params.cmd_rsp.status, HEX);
+            Serial.println();
+        }
+
+        if (state == waitingForEvent) {
+            state = ready;
+            // save the response value of SPI slave into buffer
+            // can be read via callback function
+            lastResponse = evnt.params.cmd_rsp.response.val_get.data[0];
+        }
     }
-    
-    //Serial.print(state);
-    //Serial.print("  ");
-    //Serial.println(initState);
 }
