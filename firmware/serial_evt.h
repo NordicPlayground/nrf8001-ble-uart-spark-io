@@ -45,6 +45,12 @@ typedef enum
     ADDR_TYPE_6LOWPAN
 } __packed addr_type_t;
 
+typedef enum
+{
+    OPERATING_MODE_TEST,
+    OPERATING_MODE_SETUP,
+    OPERATING_MODE_STANDBY
+} __packed operating_mode_t;
 
 /****** CMD RSP EVT PARAMS ******/
 typedef struct
