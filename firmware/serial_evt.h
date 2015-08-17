@@ -30,6 +30,7 @@
 
 typedef enum
 {
+    SERIAL_EVT_OPCODE_DEVICE_STARTED        = 0x81,
     SERIAL_EVT_OPCODE_ECHO_RSP              = 0x82,
     SERIAL_EVT_OPCODE_CMD_RSP               = 0x84,
     SERIAL_EVT_OPCODE_EVENT_NEW             = 0XB3,
@@ -127,6 +128,12 @@ typedef struct
     uint8_t data[RBC_MESH_VALUE_MAX_LEN];
 } __packed serial_evt_params_event_conflicting_t;
 
+typedef struct
+{
+    operating_mode_t operating_mode;
+    uint8_t hw_error;
+    uint8_t data_credit_available;
+} __packed serial_evt_params_event_device_started_t;
 
 typedef struct
 {
