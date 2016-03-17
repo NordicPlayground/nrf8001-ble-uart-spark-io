@@ -59,8 +59,7 @@ bool rbc_mesh_echo(uint8_t* buffer, int len){
 bool rbc_mesh_init(
 	uint32_t accessAddr,
 	uint8_t chanNr,
-	uint8_t handleCount,
-    uint32_t advInt_ms){
+	uint32_t interval_min_ms){
 	
 	if(chanNr != 37 && chanNr != 38 && chanNr != 39)
 		return false;
@@ -72,13 +71,14 @@ bool rbc_mesh_init(
     p_cmd->opcode = SERIAL_CMD_OPCODE_INIT;
     p_cmd->params.init.access_addr = accessAddr;
     p_cmd->params.init.channel = chanNr;
-    p_cmd->params.init.handle_count = handleCount;
-    p_cmd->params.init.adv_int_min = advInt_ms;
+    //p_cmd->params.init.handle_count = handleCount;
+    //p_cmd->params.init.adv_int_min = advInt_ms;
+    p_cmd->params.init.interval_min = interval_min_ms;
 
 	return hal_aci_tl_send(&msg_for_mesh);
 }
 
-bool rbc_mesh_value_set(uint8_t handle, uint8_t* buffer, int len){
+bool rbc_mesh_value_set(uint16_t handle, uint8_t* buffer, int len){
 
 	if (len > HAL_ACI_MAX_LENGTH - 1 || len < 1)
 		return false;
@@ -95,7 +95,7 @@ bool rbc_mesh_value_set(uint8_t handle, uint8_t* buffer, int len){
 }
 
 
-bool rbc_mesh_value_enable(uint8_t handle){
+bool rbc_mesh_value_enable(uint16_t handle){
 
     hal_aci_data_t msg_for_mesh;
     serial_cmd_t* p_cmd = (serial_cmd_t*) msg_for_mesh.buffer;
@@ -107,7 +107,7 @@ bool rbc_mesh_value_enable(uint8_t handle){
 	return hal_aci_tl_send(&msg_for_mesh);
 }
 
-bool rbc_mesh_value_disable(uint8_t handle){
+bool rbc_mesh_value_disable(uint16_t handle){
 
     hal_aci_data_t msg_for_mesh;
     serial_cmd_t* p_cmd = (serial_cmd_t*) msg_for_mesh.buffer;
@@ -119,7 +119,7 @@ bool rbc_mesh_value_disable(uint8_t handle){
 	return hal_aci_tl_send(&msg_for_mesh);
 }
 
-bool rbc_mesh_value_get(uint8_t handle){
+bool rbc_mesh_value_get(uint16_t handle){
 
     hal_aci_data_t msg_for_mesh;
     serial_cmd_t* p_cmd = (serial_cmd_t*) msg_for_mesh.buffer;
