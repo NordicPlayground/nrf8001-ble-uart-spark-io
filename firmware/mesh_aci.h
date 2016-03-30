@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _MESH_ACI_H__
 #define _MESH_ACI_H__
 
-#include "rbc_mesh.h"
+//#include "rbc_mesh.h"
 #include "toolchain.h"
 
 #include <stdint.h>
