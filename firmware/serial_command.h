@@ -34,8 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 
 
-
-typedef enum
+typedef __packed_armcc enum
 {
     SERIAL_CMD_OPCODE_ECHO                  = 0x02,
     SERIAL_CMD_OPCODE_RADIO_RESET           = 0x0E,
@@ -55,69 +54,69 @@ typedef enum
     SERIAL_CMD_OPCODE_ACCESS_ADDR_GET       = 0x7C,
     SERIAL_CMD_OPCODE_CHANNEL_GET           = 0x7D,
     SERIAL_CMD_OPCODE_INTERVAL_GET          = 0x7F,    
-} serial_cmd_opcode_t;
+} __packed_gcc serial_cmd_opcode_t;
 
 
 /****** CMD PARAMS ******/
-typedef struct 
+typedef __packed_armcc struct 
 {
     uint8_t data[29];
-} serial_cmd_params_echo_t;
+} __packed_gcc serial_cmd_params_echo_t;
 
-typedef struct 
+typedef __packed_armcc struct 
 {
     uint32_t access_addr;
     uint32_t interval_min;
     uint8_t channel;
-} serial_cmd_params_init_t;
+} __packed_gcc serial_cmd_params_init_t;
 
-typedef struct 
+typedef __packed_armcc struct 
 {
     rbc_mesh_value_handle_t handle;
     uint8_t flag; 
     uint8_t value;
-} serial_cmd_params_flag_set_t;
+} __packed_gcc serial_cmd_params_flag_set_t;
 
-typedef struct 
+typedef __packed_armcc struct 
 {
     rbc_mesh_value_handle_t handle;
     uint8_t flag; 
-} serial_cmd_params_flag_get_t;
+} __packed_gcc serial_cmd_params_flag_get_t;
 
-typedef struct 
+typedef __packed_armcc struct 
 {
     rbc_mesh_value_handle_t handle;
     uint8_t value[RBC_MESH_VALUE_MAX_LEN];
-} serial_cmd_params_value_set_t;
+} __packed_gcc serial_cmd_params_value_set_t;
 
-typedef struct 
+typedef __packed_armcc struct 
 {
     rbc_mesh_value_handle_t handle;
-} serial_cmd_params_value_enable_t;
+} __packed_gcc serial_cmd_params_value_enable_t;
 
-typedef struct 
+typedef __packed_armcc struct 
 {
     rbc_mesh_value_handle_t handle;
-} serial_cmd_params_value_disable_t;
+} __packed_gcc serial_cmd_params_value_disable_t;
 
-typedef struct 
+typedef __packed_armcc struct 
 {
     rbc_mesh_value_handle_t handle;
-} serial_cmd_params_value_get_t;
+} __packed_gcc serial_cmd_params_value_get_t;
 
-typedef struct 
+typedef __packed_armcc struct 
 {
     dfu_packet_t packet;
-} serial_cmd_params_dfu_t;
+} __packed_gcc serial_cmd_params_dfu_t;
 
 
 
 
-typedef struct 
+typedef __packed_armcc struct 
 {
     uint8_t length;
     serial_cmd_opcode_t opcode;
-    union 
+    __packed_armcc union 
     {
         serial_cmd_params_echo_t            echo;
         serial_cmd_params_init_t            init;
@@ -128,8 +127,8 @@ typedef struct
         serial_cmd_params_value_disable_t   value_disable;
         serial_cmd_params_value_get_t       value_get;
         serial_cmd_params_dfu_t             dfu;
-    } params;
-}  serial_cmd_t;
+    } __packed_gcc params;
+} __packed_gcc  serial_cmd_t;
 
 
 #endif /* _SERIAL_COMMAND_H__ */

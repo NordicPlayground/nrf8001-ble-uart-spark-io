@@ -4,7 +4,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define __packed __attribute__((__packed__)) 
+#define __packed __attribute__((__packed__))
+#define __packed_armcc __attribute__((__packed_armcc__))
+#define __packed_gcc __attribute__((__packed_gcc__))
 
 #define RBC_MESH_VALUE_MAX_LEN (28)
 
