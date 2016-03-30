@@ -15,6 +15,19 @@ typedef uint16_t rbc_mesh_value_handle_t;
 
 typedef struct __attribute((packed))
 {
+    uint8_t id;
+    uint8_t ver;
+} bl_id_t;
+
+typedef struct __attribute((packed))
+{
+    uint32_t company_id;
+    uint16_t app_id;
+    uint32_t app_version;
+} app_id_t;
+
+typedef struct __attribute((packed))
+{
     uint16_t sd;
     bl_id_t bootloader;
     app_id_t app;
