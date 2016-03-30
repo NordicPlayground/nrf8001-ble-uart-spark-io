@@ -10,5 +10,7 @@
 
 #define RBC_MESH_VALUE_MAX_LEN (28)
 
+typedef uint16_t rbc_mesh_value_handle_t;
+
 #endif /* _SERIAL_INTERNAL_H__ */
 
