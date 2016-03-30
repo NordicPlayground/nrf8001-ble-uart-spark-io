@@ -42,7 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdbool.h>
 
 
-typedef __packed_armcc enum
+typedef enum
 {
     SERIAL_EVT_OPCODE_DEVICE_STARTED        = 0x81,
     SERIAL_EVT_OPCODE_ECHO_RSP              = 0x82,
@@ -52,69 +52,69 @@ typedef __packed_armcc enum
     SERIAL_EVT_OPCODE_EVENT_CONFLICTING     = 0xB5,
     SERIAL_EVT_OPCODE_EVENT_TX              = 0xB6,
     SERIAL_EVT_OPCODE_DFU                   = 0x78
-} __packed_gcc serial_evt_opcode_t;
+} serial_evt_opcode_t;
 
 
-typedef __packed_armcc enum
+typedef enum
 {
     OPERATING_MODE_TEST,
     OPERATING_MODE_SETUP,
     OPERATING_MODE_STANDBY
-} __packed_gcc operating_mode_t;
+} operating_mode_t;
 
 
 /****** CMD RSP EVT PARAMS ******/
-typedef __packed_armcc struct
+typedef struct
 {
     rbc_mesh_value_handle_t handle;
     uint8_t flag;
     uint8_t value;
-} __packed_gcc serial_evt_cmd_rsp_params_flag_get_t;
+} serial_evt_cmd_rsp_params_flag_get_t;
 
-typedef __packed_armcc struct
+typedef struct
 {
     uint8_t major;
     uint8_t minor_1;
     uint8_t minor_2;
-} __packed_gcc serial_evt_cmd_rsp_params_build_version_t;
+} serial_evt_cmd_rsp_params_build_version_t;
 
-typedef __packed_armcc struct
+typedef struct
 {
     uint32_t access_addr;
-} __packed_gcc serial_evt_cmd_rsp_params_access_addr_t;
+} serial_evt_cmd_rsp_params_access_addr_t;
 
-typedef __packed_armcc struct
+typedef struct
 {
     uint8_t channel;
-} __packed_gcc serial_evt_cmd_rsp_params_channel_t;
+} serial_evt_cmd_rsp_params_channel_t;
 
-typedef __packed_armcc struct
+typedef struct
 {
     uint32_t int_min;
-} __packed_gcc serial_evt_cmd_rsp_params_int_min_t;
+} serial_evt_cmd_rsp_params_int_min_t;
 
-typedef __packed_armcc struct
+typedef struct
 {
     rbc_mesh_value_handle_t handle;
     uint8_t data[RBC_MESH_VALUE_MAX_LEN];
-} __packed_gcc serial_evt_cmd_rsp_params_val_get_t;
+} serial_evt_cmd_rsp_params_val_get_t;
 
-typedef __packed_armcc struct
+typedef struct
 {
     uint16_t packet_type;
-} __packed_gcc serial_evt_cmd_rsp_params_dfu_t;
+} serial_evt_cmd_rsp_params_dfu_t;
 
 /****** EVT PARAMS ******/
-typedef __packed_armcc struct
+typedef struct
 {
     uint8_t data[29];
-} __packed_gcc serial_evt_params_echo_t;
+} serial_evt_params_echo_t;
 
-typedef __packed_armcc struct
+typedef struct
 {
     uint8_t command_opcode;
     aci_status_code_t status;
-    __packed_armcc union
+    union
     {
         serial_evt_cmd_rsp_params_build_version_t build_version;
         serial_evt_cmd_rsp_params_access_addr_t access_addr;
@@ -123,50 +123,50 @@ typedef __packed_armcc struct
         serial_evt_cmd_rsp_params_int_min_t int_min;
         serial_evt_cmd_rsp_params_val_get_t val_get;
         serial_evt_cmd_rsp_params_dfu_t dfu;
-    } __packed_gcc response;        
-} __packed_gcc serial_evt_params_cmd_rsp_t;
+    } response;        
+} serial_evt_params_cmd_rsp_t;
 
-typedef __packed_armcc struct
+typedef struct
 {
     rbc_mesh_value_handle_t handle;
     uint8_t data[RBC_MESH_VALUE_MAX_LEN];
-} __packed_gcc serial_evt_params_event_new_t;
+} serial_evt_params_event_new_t;
 
-typedef __packed_armcc struct
+typedef struct
 {
     rbc_mesh_value_handle_t handle;
     uint8_t data[RBC_MESH_VALUE_MAX_LEN];
-} __packed_gcc serial_evt_params_event_update_t;
+} serial_evt_params_event_update_t;
 
-typedef __packed_armcc struct 
+typedef struct 
 {
     rbc_mesh_value_handle_t handle;
     uint8_t data[RBC_MESH_VALUE_MAX_LEN];
-} __packed_gcc serial_evt_params_event_conflicting_t;
+} serial_evt_params_event_conflicting_t;
 
-typedef __packed_armcc struct 
+typedef struct 
 {
     rbc_mesh_value_handle_t handle;
     uint8_t data[RBC_MESH_VALUE_MAX_LEN];
-} __packed_gcc serial_evt_params_event_tx_t;
+} serial_evt_params_event_tx_t;
 
-typedef __packed_armcc struct 
+typedef struct 
 {
     operating_mode_t operating_mode;
     uint8_t hw_error;
     uint8_t data_credit_available;
-} __packed_gcc serial_evt_params_event_device_started_t;
+} serial_evt_params_event_device_started_t;
 
-typedef __packed_armcc struct 
+typedef struct 
 {
     dfu_packet_t packet;
-} __packed_gcc serial_evt_params_dfu_t;
+} serial_evt_params_dfu_t;
 
-typedef __packed_armcc struct 
+typedef struct 
 {
     uint8_t length;
     uint8_t opcode;
-    __packed_armcc union
+    union
     {
         serial_evt_params_echo_t                    echo;
         serial_evt_params_cmd_rsp_t                 cmd_rsp;
@@ -176,8 +176,8 @@ typedef __packed_armcc struct
         serial_evt_params_event_tx_t                event_tx;
         serial_evt_params_event_device_started_t    device_started;
         serial_evt_params_dfu_t                     dfu;
-    } __packed_gcc params;
-} __packed_gcc serial_evt_t;
+    } params;
+} serial_evt_t;
 
 
 #endif /* _SERIAL_EVENT_H__ */
