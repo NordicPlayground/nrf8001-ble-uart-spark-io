@@ -30,10 +30,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _SERIAL_COMMAND_H__
 #define _SERIAL_COMMAND_H__
 
-#include <stdint.h>
-#include "rbc_mesh.h"
+//#include <stdint.h>
+/*#include "rbc_mesh.h"
 #include "toolchain.h"
-#include "dfu_types_mesh.h"
+#include "dfu_types_mesh.h"*/
+
+#include "serial_internal.h"
+#include <stdint.h>
+
 
 
 typedef __packed_armcc enum
