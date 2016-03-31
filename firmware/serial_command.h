@@ -49,6 +49,7 @@ typedef __packed_armcc enum
     SERIAL_CMD_OPCODE_FLAG_GET              = 0x77,
     SERIAL_CMD_OPCODE_DFU                   = 0x78,
 
+    SERIAL_CMD_OPCODE_ADV_INT_GET           = 0x79,
     SERIAL_CMD_OPCODE_VALUE_GET             = 0x7A,
     SERIAL_CMD_OPCODE_BUILD_VERSION_GET     = 0x7B,
     SERIAL_CMD_OPCODE_ACCESS_ADDR_GET       = 0x7C,
