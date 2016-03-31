@@ -38,6 +38,8 @@ typedef __packed_armcc enum
 {
     SERIAL_CMD_OPCODE_ECHO                  = 0x02,
     SERIAL_CMD_OPCODE_RADIO_RESET           = 0x0E,
+
+    SERIAL_CMD_OPCODE_HANDLE_COUNT_GET      = 0x7E,
     
     SERIAL_CMD_OPCODE_INIT                  = 0x70,
     SERIAL_CMD_OPCODE_VALUE_SET             = 0x71,
