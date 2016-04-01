@@ -197,6 +197,52 @@ bool rbc_mesh_evt_get(serial_evt_t* p_evt){
     return status;
 }
 
+uint32_t rbc_mesh_persistence_set(rbc_mesh_value_handle_t handle, bool persistent)
+{
+    if (g_mesh_state == MESH_STATE_UNINITIALIZED)
+    {
+        return NRF_ERROR_INVALID_STATE;
+    }
+    if (handle > RBC_MESH_APP_MAX_HANDLE)
+    {
+        return NRF_ERROR_INVALID_ADDR;
+    }
+    
+    return vh_value_persistence_set(handle, persistent);
+}
+
+uint32_t rbc_mesh_tx_event_set(rbc_mesh_value_handle_t handle, bool do_tx_event)
+{
+    if (g_mesh_state == MESH_STATE_UNINITIALIZED)
+    {
+        return NRF_ERROR_INVALID_STATE;
+    }
+    if (handle > RBC_MESH_APP_MAX_HANDLE)
+    {
+        return NRF_ERROR_INVALID_ADDR;
+    }
+
+    return vh_tx_event_set(handle, do_tx_event);
+}
+
+uint32_t rbc_mesh_persistence_get(rbc_mesh_value_handle_t handle, bool* is_persistent)
+{
+    if (handle > RBC_MESH_APP_MAX_HANDLE)
+    {
+        return NRF_ERROR_INVALID_ADDR;
+    }
+    return vh_value_persistence_get(handle, is_persistent);
+}
+
+uint32_t rbc_mesh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_event)
+{
+    if (handle > RBC_MESH_APP_MAX_HANDLE)
+    {
+        return NRF_ERROR_INVALID_ADDR;
+    }
+    return vh_tx_event_flag_get(handle, is_doing_tx_event);
+}
+
 void rbc_mesh_hw_init(aci_pins_t* pins){
 	
   	hal_aci_tl_init(pins, false);
