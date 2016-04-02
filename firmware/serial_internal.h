@@ -39,7 +39,7 @@
 
 
 uint32_t vh_value_persistence_get(rbc_mesh_value_handle_t handle, bool* p_persistent);
-uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_event)
+uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_event);
 
 
 typedef uint16_t rbc_mesh_value_handle_t;

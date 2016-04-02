@@ -252,4 +252,3 @@ void rbc_mesh_radio_reset()
 {
     lib_aci_radio_reset();
 }
-
