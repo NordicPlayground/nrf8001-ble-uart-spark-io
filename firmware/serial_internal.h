@@ -37,11 +37,26 @@
 #define RBC_MESH_INVALID_HANDLE                     (0xFFFF) /**< Designated "invalid" handle, may never be used */
 #define RBC_MESH_APP_MAX_HANDLE                     (0xFFEF) /**< Upper limit to application defined handles. The last 16 handles are reserved for mesh-maintenance. */
 
+#define NRF_ERROR_BASE_NUM      (0x0)       ///< Global error base
+#define NRF_ERROR_SDM_BASE_NUM  (0x1000)    ///< SDM error base
+#define NRF_ERROR_SOC_BASE_NUM  (0x2000)    ///< SoC error base
+#define NRF_ERROR_STK_BASE_NUM  (0x3000)    ///< STK error base
 
 typedef uint16_t rbc_mesh_value_handle_t;
 
+static handle_entry_t   m_handle_cache[RBC_MESH_HANDLE_CACHE_ENTRIES];
+static data_entry_t     m_data_cache[RBC_MESH_DATA_CACHE_ENTRIES];
+static uint32_t         m_handle_cache_head;
+static uint32_t         m_handle_cache_tail;
+static bool             m_is_initialized = false;
+static fifo_t           m_task_fifo;
+static cache_task_t     m_task_fifo_buffer[CACHE_TASK_FIFO_SIZE];
+static bool             m_handle_task_scheduled;
+
 uint32_t vh_value_persistence_get(rbc_mesh_value_handle_t handle, bool* p_persistent);
 uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_event);
+void event_handler_critical_section_end(void);
+
 
 
 typedef struct __attribute((packed))
@@ -174,6 +189,17 @@ uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_
 
     event_handler_critical_section_end();
     return NRF_SUCCESS;
+}
+
+void event_handler_critical_section_end(void)
+{
+    uint32_t was_masked;
+    _DISABLE_IRQS(was_masked);
+    if (!--g_critical)
+    {
+        NVIC_EnableIRQ(QDEC_IRQn);
+    }
+    _ENABLE_IRQS(was_masked);
 }
 
 #endif /* _SERIAL_INTERNAL_H__ */
