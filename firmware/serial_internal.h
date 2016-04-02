@@ -42,6 +42,9 @@
 #define NRF_ERROR_SOC_BASE_NUM  (0x2000)    ///< SoC error base
 #define NRF_ERROR_STK_BASE_NUM  (0x3000)    ///< STK error base
 
+#define HANDLE_CACHE_ENTRY_INVALID      (RBC_MESH_HANDLE_CACHE_ENTRIES)
+#define DATA_CACHE_ENTRY_INVALID        (RBC_MESH_DATA_CACHE_ENTRIES)
+
 typedef uint16_t rbc_mesh_value_handle_t;
 
 static handle_entry_t   m_handle_cache[RBC_MESH_HANDLE_CACHE_ENTRIES];
@@ -56,8 +59,56 @@ static bool             m_handle_task_scheduled;
 uint32_t vh_value_persistence_get(rbc_mesh_value_handle_t handle, bool* p_persistent);
 uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_event);
 void event_handler_critical_section_end(void);
+void event_handler_critical_section_begin(void);
+static uint16_t handle_entry_get(rbc_mesh_value_handle_t handle);
 
 
+/* specialized function pointer for copying memory between two instances */
+typedef void (*fifo_memcpy)(void* dest, const void* src);
+
+typedef struct
+{
+  void* elem_array;
+  uint32_t elem_size;
+  uint32_t array_len;
+  uint32_t head;
+  uint32_t tail;
+  fifo_memcpy memcpy_fptr; /* must be a valid function or NULL */
+} fifo_t;
+
+typedef struct
+{
+    cache_task_type_t type;
+    rbc_mesh_value_handle_t handle;
+    union
+    {
+        struct
+        {
+            mesh_packet_t* p_packet;
+        } enable;
+        struct
+        {
+            mesh_packet_t* p_packet;
+        } local_update;
+    } params;
+} cache_task_t;
+
+typedef struct
+{
+    rbc_mesh_value_handle_t handle;             /** data handle */
+    uint16_t                version;            /** last received handle version */
+    uint16_t                index_next : 15;    /** linked list index next */
+    uint16_t                tx_event   : 1;     /** TX event flag */
+    uint16_t                index_prev : 15;    /** linked list index prev */
+    uint16_t                persistent : 1;     /** Persistent flag */
+    uint16_t                data_entry;         /** index of the associated data entry */
+} handle_entry_t;
+
+typedef struct
+{
+    trickle_t trickle;
+    mesh_packet_t* p_packet;
+} data_entry_t;
 
 typedef struct __attribute((packed))
 {
@@ -141,6 +192,7 @@ typedef struct __attribute((packed))
     } payload;
 } dfu_packet_t;
 
+
 uint32_t vh_value_persistence_get(rbc_mesh_value_handle_t handle, bool* p_persistent)
 {
     if (!m_is_initialized)
@@ -201,6 +253,38 @@ void event_handler_critical_section_end(void)
     }
     _ENABLE_IRQS(was_masked);
 }
+
+void event_handler_critical_section_begin(void)
+{
+    uint32_t was_masked;
+    _DISABLE_IRQS(was_masked);
+    if (!g_critical++)
+    {
+        NVIC_DisableIRQ(QDEC_IRQn);
+    }
+    _ENABLE_IRQS(was_masked);
+}
+
+static uint16_t handle_entry_get(rbc_mesh_value_handle_t handle)
+{
+    event_handler_critical_section_begin();
+    uint16_t i = m_handle_cache_head;
+
+    while (m_handle_cache[i].handle != handle)
+    {
+        if (m_handle_cache_tail == i)
+        {
+            event_handler_critical_section_end();
+            return HANDLE_CACHE_ENTRY_INVALID; /* checked all entries */
+        }
+        HANDLE_CACHE_ITERATE(i);
+    }
+    
+    event_handler_critical_section_end();
+    return i;
+}
+
+
 
 #endif /* _SERIAL_INTERNAL_H__ */
 
