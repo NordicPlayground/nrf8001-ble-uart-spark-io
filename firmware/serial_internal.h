@@ -11,6 +11,37 @@
 #define RBC_MESH_VALUE_MAX_LEN (28)
 #define SEGMENT_LENGTH              (16)
 
+#define NRF_SUCCESS                           (NRF_ERROR_BASE_NUM + 0)  ///< Successful command
+#define NRF_ERROR_SVC_HANDLER_MISSING         (NRF_ERROR_BASE_NUM + 1)  ///< SVC handler is missing
+#define NRF_ERROR_SOFTDEVICE_NOT_ENABLED      (NRF_ERROR_BASE_NUM + 2)  ///< SoftDevice has not been enabled
+#define NRF_ERROR_INTERNAL                    (NRF_ERROR_BASE_NUM + 3)  ///< Internal Error
+#define NRF_ERROR_NO_MEM                      (NRF_ERROR_BASE_NUM + 4)  ///< No Memory for operation
+#define NRF_ERROR_NOT_FOUND                   (NRF_ERROR_BASE_NUM + 5)  ///< Not found
+#define NRF_ERROR_NOT_SUPPORTED               (NRF_ERROR_BASE_NUM + 6)  ///< Not supported
+#define NRF_ERROR_INVALID_PARAM               (NRF_ERROR_BASE_NUM + 7)  ///< Invalid Parameter
+#define NRF_ERROR_INVALID_STATE               (NRF_ERROR_BASE_NUM + 8)  ///< Invalid state, operation disallowed in this state
+#define NRF_ERROR_INVALID_LENGTH              (NRF_ERROR_BASE_NUM + 9)  ///< Invalid Length
+#define NRF_ERROR_INVALID_FLAGS               (NRF_ERROR_BASE_NUM + 10) ///< Invalid Flags
+#define NRF_ERROR_INVALID_DATA                (NRF_ERROR_BASE_NUM + 11) ///< Invalid Data
+#define NRF_ERROR_DATA_SIZE                   (NRF_ERROR_BASE_NUM + 12) ///< Data size exceeds limit
+#define NRF_ERROR_TIMEOUT                     (NRF_ERROR_BASE_NUM + 13) ///< Operation timed out
+#define NRF_ERROR_NULL                        (NRF_ERROR_BASE_NUM + 14) ///< Null Pointer
+#define NRF_ERROR_FORBIDDEN                   (NRF_ERROR_BASE_NUM + 15) ///< Forbidden Operation
+#define NRF_ERROR_INVALID_ADDR                (NRF_ERROR_BASE_NUM + 16) ///< Bad Memory Address
+#define NRF_ERROR_BUSY   
+
+#define RBC_MESH_ACCESS_ADDRESS_BLE_ADV             (0x8E89BED6) /**< BLE spec defined access address. */
+#define RBC_MESH_INTERVAL_MIN_MIN_MS                (5) /**< Lowest min-interval allowed. */
+#define RBC_MESH_INTERVAL_MIN_MAX_MS                (60000) /**< Highest min-interval allowed. */
+#define RBC_MESH_VALUE_MAX_LEN                      (23) /**< Longest legal payload. */
+#define RBC_MESH_INVALID_HANDLE                     (0xFFFF) /**< Designated "invalid" handle, may never be used */
+#define RBC_MESH_APP_MAX_HANDLE                     (0xFFEF) /**< Upper limit to application defined handles. The last 16 handles are reserved for mesh-maintenance. */
+
+
+uint32_t vh_value_persistence_get(rbc_mesh_value_handle_t handle, bool* p_persistent);
+uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_event)
+
+
 typedef uint16_t rbc_mesh_value_handle_t;
 
 typedef struct __attribute((packed))
@@ -94,6 +125,56 @@ typedef struct __attribute((packed))
         } rsp_data;
     } payload;
 } dfu_packet_t;
+
+uint32_t vh_value_persistence_get(rbc_mesh_value_handle_t handle, bool* p_persistent)
+{
+    if (!m_is_initialized)
+        return NRF_ERROR_INVALID_STATE;
+
+    if (handle == RBC_MESH_INVALID_HANDLE)
+    {
+        return NRF_ERROR_INVALID_ADDR;
+    }
+    
+    event_handler_critical_section_begin();
+    
+    uint16_t handle_index = handle_entry_get(handle);
+    if (handle_index == HANDLE_CACHE_ENTRY_INVALID)
+    {
+        event_handler_critical_section_end();
+        return NRF_ERROR_NOT_FOUND;
+    }
+
+    *p_persistent = m_handle_cache[handle_index].persistent;
+    
+    event_handler_critical_section_end();
+    return NRF_SUCCESS;
+}
+
+uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_event)
+{
+    if (!m_is_initialized)
+        return NRF_ERROR_INVALID_STATE;
+
+    if (handle == RBC_MESH_INVALID_HANDLE)
+    {
+        return NRF_ERROR_INVALID_ADDR;
+    }
+
+    event_handler_critical_section_begin();
+    
+    uint16_t handle_index = handle_entry_get(handle);
+    if (handle_index == HANDLE_CACHE_ENTRY_INVALID)
+    {
+        event_handler_critical_section_end();
+        return NRF_ERROR_NOT_FOUND;
+    }
+
+    *is_doing_tx_event = m_handle_cache[handle_index].tx_event;
+
+    event_handler_critical_section_end();
+    return NRF_SUCCESS;
+}
 
 #endif /* _SERIAL_INTERNAL_H__ */
 

@@ -24,6 +24,9 @@
 
 #include "serial_evt.h"
 
+#define RBC_MESH_APP_MAX_HANDLE                     (0xFFEF) /**< Upper limit to application defined handles. The last 16 handles are reserved for mesh-maintenance. */
+#define NRF_ERROR_INVALID_ADDR                (NRF_ERROR_BASE_NUM + 16) ///< Bad Memory Address
+
 /** @brief executes an echo-test
  *  @details
  *  Promts the slave to echo whatever the buffer contains
