@@ -112,10 +112,10 @@ static uint32_t 		g_critical = 0;
 #define HANDLE_CACHE_ITERATE(index)     do { index = m_handle_cache[index].index_next; } while (0)
 #define HANDLE_CACHE_ITERATE_BACK(index)     do { index = m_handle_cache[index].index_prev; } while (0)
 
-uint32_t vh_value_persistence_get(rbc_mesh_value_handle_t handle, bool* p_persistent);
-uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_event);
-void event_handler_critical_section_end(void);
-void event_handler_critical_section_begin(void);
+//uint32_t vh_value_persistence_get(rbc_mesh_value_handle_t handle, bool* p_persistent);
+//uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_event);
+//void event_handler_critical_section_end(void);
+//void event_handler_critical_section_begin(void);
 static uint16_t handle_entry_get(rbc_mesh_value_handle_t handle);
 
 
