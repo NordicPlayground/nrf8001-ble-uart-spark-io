@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <application.h>
+#include "application.h"
 
 #define __packed __attribute__((__packed__))
 #define __packed_armcc __attribute__((__packed_armcc__))
@@ -99,8 +99,8 @@
 #define DATA_CACHE_ENTRY_INVALID        (RBC_MESH_DATA_CACHE_ENTRIES)
 
 typedef uint16_t rbc_mesh_value_handle_t;
-//typedef int IRQn_Type;
-//IRQn_Type QDEC_IRQn = 18;
+typedef int IRQn_Type;
+IRQn_Type QDEC_IRQn = 18;
 
 static uint32_t         m_handle_cache_head;
 static uint32_t         m_handle_cache_tail;
