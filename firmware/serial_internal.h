@@ -341,7 +341,9 @@ void event_handler_critical_section_end(void)
     _DISABLE_IRQS(was_masked);
     if (!--g_critical)
     {
-        NVIC_EnableIRQ(QDEC_IRQn);
+        //NVIC_EnableIRQ(QDEC_IRQn);
+        NVIC_EnableIRQ(ADC_IRQn);
+
     }
     _ENABLE_IRQS(was_masked);
 }
@@ -352,7 +354,8 @@ void event_handler_critical_section_begin(void)
     _DISABLE_IRQS(was_masked);
     if (!g_critical++)
     {
-        NVIC_DisableIRQ(QDEC_IRQn);
+        //NVIC_DisableIRQ(QDEC_IRQn);
+        NVIC_DisableIRQ(ADC_IRQn);
     }
     _ENABLE_IRQS(was_masked);
 }
