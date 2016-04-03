@@ -283,7 +283,7 @@ static fifo_t           m_task_fifo;
 static cache_task_t     m_task_fifo_buffer[CACHE_TASK_FIFO_SIZE];
 
 
-uint32_t vh_value_persistence_get(rbc_mesh_value_handle_t handle, bool* p_persistent)
+/*uint32_t vh_value_persistence_get(rbc_mesh_value_handle_t handle, bool* p_persistent)
 {
     if (!m_is_initialized)
         return NRF_ERROR_INVALID_STATE;
@@ -306,9 +306,9 @@ uint32_t vh_value_persistence_get(rbc_mesh_value_handle_t handle, bool* p_persis
     
     event_handler_critical_section_end();
     return NRF_SUCCESS;
-}
+}*/
 
-uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_event)
+/*uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_event)
 {
     if (!m_is_initialized)
         return NRF_ERROR_INVALID_STATE;
@@ -331,7 +331,7 @@ uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_
 
     event_handler_critical_section_end();
     return NRF_SUCCESS;
-}
+}*/
 
 /*void event_handler_critical_section_end(void)
 {
@@ -346,7 +346,7 @@ uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_
     _ENABLE_IRQS(was_masked);
 }*/
 
-void event_handler_critical_section_begin(void)
+/*void event_handler_critical_section_begin(void)
 {
     uint32_t was_masked;
     _DISABLE_IRQS(was_masked);
@@ -356,7 +356,7 @@ void event_handler_critical_section_begin(void)
         NVIC_DisableIRQ(ADC_IRQn);
     }
     _ENABLE_IRQS(was_masked);
-}
+}*/
 
 static uint16_t handle_entry_get(rbc_mesh_value_handle_t handle)
 {
