@@ -27,6 +27,13 @@
 #define RBC_MESH_APP_MAX_HANDLE                     (0xFFEF) /**< Upper limit to application defined handles. The last 16 handles are reserved for mesh-maintenance. */
 #define NRF_ERROR_INVALID_ADDR                (NRF_ERROR_BASE_NUM + 16) ///< Bad Memory Address
 
+ static enum
+{
+    MESH_STATE_UNINITIALIZED,
+    MESH_STATE_RUNNING,
+    MESH_STATE_STOPPED
+} g_mesh_state;
+
 /** @brief executes an echo-test
  *  @details
  *  Promts the slave to echo whatever the buffer contains
@@ -166,6 +173,9 @@ void rbc_mesh_hw_init(aci_pins_t* pins);
  *  a DEVICE_STARTED event when it is ready to receive initialization commands.
  */
 void rbc_mesh_radio_reset();
+
+uint32_t vh_value_persistence_set(rbc_mesh_value_handle_t handle, bool persistent);
+uint32_t vh_tx_event_set(rbc_mesh_value_handle_t handle, bool do_tx_event);
 
 //TODO additional functions?
 

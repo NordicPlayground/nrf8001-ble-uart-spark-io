@@ -42,6 +42,52 @@ static void unaligned_memcpy(uint8_t* p_dst, uint8_t const* p_src, uint8_t len){
   }
 }
 
+uint32_t vh_tx_event_set(rbc_mesh_value_handle_t handle, bool do_tx_event)
+{
+    if (!m_is_initialized)
+        return NRF_ERROR_INVALID_STATE;
+
+    event_handler_critical_section_begin();
+    
+    uint16_t handle_index = handle_entry_get(handle);
+
+    if (handle_index == HANDLE_CACHE_ENTRY_INVALID)
+    {
+        event_handler_critical_section_end();
+        return NRF_ERROR_NOT_FOUND;
+    }
+
+    m_handle_cache[handle_index].tx_event = do_tx_event;
+
+    event_handler_critical_section_end();
+    return NRF_SUCCESS;
+}
+
+uint32_t vh_value_persistence_set(rbc_mesh_value_handle_t handle, bool persistent)
+{
+    if (!m_is_initialized)
+        return NRF_ERROR_INVALID_STATE;
+    
+    if (handle == RBC_MESH_INVALID_HANDLE)
+    {
+        return NRF_ERROR_INVALID_ADDR;
+    }
+    
+    event_handler_critical_section_begin();
+    
+    uint16_t handle_index = handle_entry_get(handle);
+    if (handle_index == HANDLE_CACHE_ENTRY_INVALID)
+    {
+        event_handler_critical_section_end();
+        return NRF_ERROR_NOT_FOUND;
+    }
+    
+    m_handle_cache[handle_index].persistent = persistent;
+    
+    event_handler_critical_section_end();
+    return NRF_SUCCESS;
+}
+
 bool rbc_mesh_echo(uint8_t* buffer, int len){
 	if (len > HAL_ACI_MAX_LENGTH - 1 || len < 0)
 		return false;
