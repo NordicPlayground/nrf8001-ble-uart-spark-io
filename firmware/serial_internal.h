@@ -9,7 +9,6 @@
 #define __packed_armcc __attribute__((__packed_armcc__))
 #define __packed_gcc __attribute__((__packed_gcc__))
 
-#define RBC_MESH_VALUE_MAX_LEN (28)
 #define SEGMENT_LENGTH              (16)
 
 #define NRF_SUCCESS                           (NRF_ERROR_BASE_NUM + 0)  ///< Successful command
@@ -334,7 +333,7 @@ uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_
     return NRF_SUCCESS;
 }
 
-void event_handler_critical_section_end(void)
+/*void event_handler_critical_section_end(void)
 {
     uint32_t was_masked;
     _DISABLE_IRQS(was_masked);
@@ -345,7 +344,7 @@ void event_handler_critical_section_end(void)
 
     }
     _ENABLE_IRQS(was_masked);
-}
+}*/
 
 void event_handler_critical_section_begin(void)
 {
