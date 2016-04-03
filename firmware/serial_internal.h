@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <application.h>
 
 #define __packed __attribute__((__packed__))
 #define __packed_armcc __attribute__((__packed_armcc__))
