@@ -42,19 +42,39 @@
 #define NRF_ERROR_SOC_BASE_NUM  (0x2000)    ///< SoC error base
 #define NRF_ERROR_STK_BASE_NUM  (0x3000)    ///< STK error base
 
+
+/** @brief Default value for the number of handle cache entries */
+#ifndef RBC_MESH_HANDLE_CACHE_ENTRIES
+    #define RBC_MESH_HANDLE_CACHE_ENTRIES           (100)
+#endif
+
+/** @brief Default value for the number of data cache entries */
+#ifndef RBC_MESH_DATA_CACHE_ENTRIES
+    #define RBC_MESH_DATA_CACHE_ENTRIES             (35)
+#endif
+
+/** @brief Length of app-event FIFO. Must be power of two. */
+#ifndef RBC_MESH_APP_EVENT_QUEUE_LENGTH
+    #define RBC_MESH_APP_EVENT_QUEUE_LENGTH         (16)
+#endif
+
+/** @brief Length of low level radio event FIFO. Must be power of two. */
+#ifndef RBC_MESH_RADIO_QUEUE_LENGTH
+    #define RBC_MESH_RADIO_QUEUE_LENGTH             (8)
+#endif
+
 #define HANDLE_CACHE_ENTRY_INVALID      (RBC_MESH_HANDLE_CACHE_ENTRIES)
 #define DATA_CACHE_ENTRY_INVALID        (RBC_MESH_DATA_CACHE_ENTRIES)
 
 typedef uint16_t rbc_mesh_value_handle_t;
 
-static handle_entry_t   m_handle_cache[RBC_MESH_HANDLE_CACHE_ENTRIES];
-static data_entry_t     m_data_cache[RBC_MESH_DATA_CACHE_ENTRIES];
 static uint32_t         m_handle_cache_head;
 static uint32_t         m_handle_cache_tail;
 static bool             m_is_initialized = false;
-static fifo_t           m_task_fifo;
-static cache_task_t     m_task_fifo_buffer[CACHE_TASK_FIFO_SIZE];
 static bool             m_handle_task_scheduled;
+
+#define HANDLE_CACHE_ITERATE(index)     do { index = m_handle_cache[index].index_next; } while (0)
+#define HANDLE_CACHE_ITERATE_BACK(index)     do { index = m_handle_cache[index].index_prev; } while (0)
 
 uint32_t vh_value_persistence_get(rbc_mesh_value_handle_t handle, bool* p_persistent);
 uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_event);
@@ -66,6 +86,21 @@ static uint16_t handle_entry_get(rbc_mesh_value_handle_t handle);
 /* specialized function pointer for copying memory between two instances */
 typedef void (*fifo_memcpy)(void* dest, const void* src);
 
+typedef __packed_armcc struct
+{
+    ble_packet_header_t header;
+    uint8_t addr[6];
+    uint8_t payload[BLE_ADV_PACKET_PAYLOAD_MAX_LENGTH];
+} __packed_gcc mesh_packet_t;
+
+typedef __packed_armcc struct
+{
+    uint64_t        t;              /* Absolute value of t. Equals g_trickle_time (at set time) + t_relative */
+    uint64_t        i;              /* Absolute value of i. Equals g_trickle_time (at set time) + i_relative */
+    uint32_t        i_relative;     /* Relative value of i. Represents the actual i value in IETF RFC6206 */
+    uint8_t         c;              /* Consistent messages counter */
+} __packed_gcc trickle_t;
+
 typedef struct
 {
   void* elem_array;
@@ -75,6 +110,12 @@ typedef struct
   uint32_t tail;
   fifo_memcpy memcpy_fptr; /* must be a valid function or NULL */
 } fifo_t;
+
+typedef enum
+{
+    CACHE_TASK_TYPE_ENABLE,
+    CACHE_TASK_TYPE_LOCAL_UPDATE
+} cache_task_type_t;
 
 typedef struct
 {
@@ -191,6 +232,11 @@ typedef struct __attribute((packed))
         } rsp_data;
     } payload;
 } dfu_packet_t;
+
+static handle_entry_t   m_handle_cache[RBC_MESH_HANDLE_CACHE_ENTRIES];
+static data_entry_t     m_data_cache[RBC_MESH_DATA_CACHE_ENTRIES];
+static fifo_t           m_task_fifo;
+static cache_task_t     m_task_fifo_buffer[CACHE_TASK_FIFO_SIZE];
 
 
 uint32_t vh_value_persistence_get(rbc_mesh_value_handle_t handle, bool* p_persistent)
