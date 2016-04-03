@@ -48,7 +48,7 @@
 
 #define CACHE_TASK_FIFO_SIZE            (8)
 
-#define QDEC_IRQn                     (18)
+int QDEC_IRQn                     (18)
 
 
 #if defined(__CC_ARM)
