@@ -48,7 +48,6 @@
 
 #define CACHE_TASK_FIFO_SIZE            (8)
 
-int QDEC_IRQn                     (18)
 
 
 #if defined(__CC_ARM)
@@ -99,6 +98,7 @@ int QDEC_IRQn                     (18)
 #define DATA_CACHE_ENTRY_INVALID        (RBC_MESH_DATA_CACHE_ENTRIES)
 
 typedef uint16_t rbc_mesh_value_handle_t;
+int QDEC_IRQn = 18;
 
 static uint32_t         m_handle_cache_head;
 static uint32_t         m_handle_cache_tail;
