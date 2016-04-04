@@ -57,7 +57,7 @@
     #define __packed_armcc __packed
 
     #define _DISABLE_IRQS(_was_masked) _was_masked = __disable_irq()
-    #define _ENABLE_IRQS(_was_masked) if (!_was_masked) { __enable_irq(); }
+    #define _ENABLE_IRQS(_was_masked) //if (!_was_masked) { __enable_irq(); }
 
 #elif defined(__GNUC__)
 
@@ -65,11 +65,11 @@
     #define __packed_gcc __attribute__((packed))
 
     #define _DISABLE_IRQS(_was_masked) do{ \
-        __ASM volatile ("MRS %0, primask" : "=r" (_was_masked) );\
-        __ASM volatile ("cpsid i" : : : "memory");\
+        volatile ("MRS %0, primask" : "=r" (_was_masked) );\
+        volatile ("cpsid i" : : : "memory");\
     } while(0)
 
-    #define _ENABLE_IRQS(_was_masked) if (!_was_masked) { __enable_irq(); }
+    #define _ENABLE_IRQS(_was_masked) //if (!_was_masked) { __enable_irq(); }
 #endif
 
 
