@@ -53,7 +53,7 @@ uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_
     return NRF_SUCCESS;
 }
 
-void event_handler_critical_section_end(void)
+/*void event_handler_critical_section_end(void)
 {
     uint32_t was_masked;
     //_DISABLE_IRQS(was_masked);
@@ -77,7 +77,7 @@ void event_handler_critical_section_begin(void)
     }
    // _ENABLE_IRQS(was_masked);
 }
-
+*/
 static uint16_t handle_entry_get(rbc_mesh_value_handle_t handle)
 {
     event_handler_critical_section_begin();
