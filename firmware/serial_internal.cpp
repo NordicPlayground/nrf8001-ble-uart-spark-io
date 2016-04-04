@@ -56,26 +56,26 @@ uint32_t vh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_
 void event_handler_critical_section_end(void)
 {
     uint32_t was_masked;
-    _DISABLE_IRQS(was_masked);
+    //_DISABLE_IRQS(was_masked);
     if (!--g_critical)
     {
-        //NVIC_EnableIRQ(QDEC_IRQn);
-        NVIC_EnableIRQ(ADC_IRQn);
+        NVIC_EnableIRQ(QDEC_IRQn);
+        //NVIC_EnableIRQ(ADC_IRQn);
 
     }
-    _ENABLE_IRQS(was_masked);
+    //_ENABLE_IRQS(was_masked);
 }
 
 void event_handler_critical_section_begin(void)
 {
     uint32_t was_masked;
-    _DISABLE_IRQS(was_masked);
+    //_DISABLE_IRQS(was_masked);
     if (!g_critical++)
     {
-        //NVIC_DisableIRQ(QDEC_IRQn);
-        NVIC_DisableIRQ(ADC_IRQn);
+        NVIC_DisableIRQ(QDEC_IRQn);
+        //NVIC_DisableIRQ(ADC_IRQn);
     }
-    _ENABLE_IRQS(was_masked);
+   // _ENABLE_IRQS(was_masked);
 }
 
 static uint16_t handle_entry_get(rbc_mesh_value_handle_t handle)
