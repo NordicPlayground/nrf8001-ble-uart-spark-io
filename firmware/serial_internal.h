@@ -48,10 +48,10 @@
 
 #define CACHE_TASK_FIFO_SIZE            (8)
 
-__STATIC_INLINE void NVIC_DisableIRQ(IRQn_Type IRQn)
+/*__STATIC_INLINE void NVIC_DisableIRQ(IRQn_Type IRQn)
 {
   NVIC->ICER[0] = (1 << ((uint32_t)(IRQn) & 0x1F));
-}
+}*/
 
 
 
