@@ -358,7 +358,7 @@ static cache_task_t     m_task_fifo_buffer[CACHE_TASK_FIFO_SIZE];
     _ENABLE_IRQS(was_masked);
 }*/
 
-static uint16_t handle_entry_get(rbc_mesh_value_handle_t handle)
+/*static uint16_t handle_entry_get(rbc_mesh_value_handle_t handle)
 {
     event_handler_critical_section_begin();
     uint16_t i = m_handle_cache_head;
@@ -368,15 +368,15 @@ static uint16_t handle_entry_get(rbc_mesh_value_handle_t handle)
         if (m_handle_cache_tail == i)
         {
             event_handler_critical_section_end();
-            return HANDLE_CACHE_ENTRY_INVALID; /* checked all entries */
-        }
+            return HANDLE_CACHE_ENTRY_INVALID;*/ /* checked all entries */
+        /*}
         HANDLE_CACHE_ITERATE(i);
     }
     
     event_handler_critical_section_end();
     return i;
 }
-
+*/
 
 
 #endif /* _SERIAL_INTERNAL_H__ */
