@@ -61,8 +61,8 @@
     #define __packed_gcc
     #define __packed_armcc __packed
 
-    #define _DISABLE_IRQS(_was_masked) //_was_masked = __disable_irq()
-    #define _ENABLE_IRQS(_was_masked) //if (!_was_masked) { __enable_irq(); }
+    #define _DISABLE_IRQS(_was_masked) _was_masked = __disable_irq()
+    #define _ENABLE_IRQS(_was_masked) if (!_was_masked) { __enable_irq(); }
 
 #elif defined(__GNUC__)
 
