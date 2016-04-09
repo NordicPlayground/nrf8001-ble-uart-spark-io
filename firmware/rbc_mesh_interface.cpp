@@ -137,8 +137,12 @@ bool rbc_mesh_value_set(uint16_t handle, uint8_t* buffer, int len){
     p_cmd->params.value_set.handle = handle;
     memcpy(p_cmd->params.value_set.value, buffer, len);
 
+    Serial.print("buffer[0]: ");
     Serial.println(buffer[0]);
+    Serial.print("buffer[1]: ");
     Serial.println(buffer[1]);
+    Serial.print("buffer[2]: ");
+    Serial.println(buffer[2]);
 
 	return hal_aci_tl_send(&msg_for_mesh);
 }
