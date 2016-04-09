@@ -241,6 +241,8 @@ bool hal_aci_tl_event_get(hal_aci_data_t *p_aci_data)
       m_aci_reqn_enable();
     }
 
+    Serial.println("TRUE");
+
     return true;
   }
 
