@@ -141,8 +141,8 @@ bool rbc_mesh_value_set(uint16_t handle, uint8_t* buffer, int len){
     Serial.println(*buffer);
     Serial.print("buffer[1]: ");
     Serial.println(buffer[1]);
-    Serial.print("buffer[2]: ");
-    Serial.println(buffer[2]);
+    Serial.print("buffer[3]: ");
+    Serial.println(buffer[3]);
     Serial.print("buffer.value: ");
     Serial.println(p_cmd->params.value_set.value[0]);
 
