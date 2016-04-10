@@ -26,6 +26,7 @@
 #include "hal_platform.h"
 #include "hal_aci_tl.h"
 #include "aci_queue.h"
+#include "serial_command.h"
 
 static void m_aci_data_print(hal_aci_data_t *p_data);
 static void m_aci_event_check(void);
