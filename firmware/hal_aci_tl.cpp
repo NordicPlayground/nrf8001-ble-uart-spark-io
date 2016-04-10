@@ -158,6 +158,8 @@ static bool m_aci_spi_transfer(hal_aci_data_t * data_to_send, hal_aci_data_t * r
   Serial.println(data_to_send->buffer[byte_sent_cnt]);
   Serial.print("data_to_send->buffer[byte_sent_cnt++]: ");
   Serial.println(data_to_send->buffer[byte_sent_cnt++]);
+  Serial.print("value": );
+  Serial.println(data_to_send->buffer.params.value_set.value);
   byte_sent_cnt = 0;
   received_data->status_byte = spi_readwrite(data_to_send->buffer[byte_sent_cnt++]);
   // Send first byte, receive length from slave
@@ -317,7 +319,6 @@ bool hal_aci_tl_send(hal_aci_data_t *p_aci_cmd)
     if(!aci_queue_is_full(&aci_rx_q))
     {
       // Lower the REQN only when successfully enqueued
-      Serial.println("Not full");
       m_aci_reqn_enable();
     }
 
