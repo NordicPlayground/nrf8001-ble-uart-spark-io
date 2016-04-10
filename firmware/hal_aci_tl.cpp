@@ -154,6 +154,9 @@ static bool m_aci_spi_transfer(hal_aci_data_t * data_to_send, hal_aci_data_t * r
 
   // Send length, receive header
   byte_sent_cnt = 0;
+  Serial.print("data_to_send->buffer[byte_sent_cnt++]: ");
+  Serial.println(buffer[byte_sent_cnt++]);
+  byte_sent_cnt = 0;
   received_data->status_byte = spi_readwrite(data_to_send->buffer[byte_sent_cnt++]);
   // Send first byte, receive length from slave
   received_data->buffer[0] = spi_readwrite(data_to_send->buffer[byte_sent_cnt++]);
@@ -297,6 +300,8 @@ void hal_aci_tl_init(aci_pins_t *a_pins, bool debug)
 bool hal_aci_tl_send(hal_aci_data_t *p_aci_cmd)
 {
   const uint8_t length = p_aci_cmd->buffer[0];
+  Serial.print("Length: ");
+  Serial.println(length);
   bool ret_val = false;
 
   if (length > HAL_ACI_MAX_LENGTH)
@@ -310,6 +315,7 @@ bool hal_aci_tl_send(hal_aci_data_t *p_aci_cmd)
     if(!aci_queue_is_full(&aci_rx_q))
     {
       // Lower the REQN only when successfully enqueued
+      Serial.println("Not full");
       m_aci_reqn_enable();
     }
 
