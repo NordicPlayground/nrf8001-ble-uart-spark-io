@@ -333,6 +333,8 @@ bool hal_aci_tl_send(hal_aci_data_t *p_aci_cmd)
 
 static uint8_t spi_readwrite(const uint8_t aci_byte)
 {	
+  Serial.print("spi_readwrite: ");
+  Serial.println(aci_byte);
 	return SPI.transfer(aci_byte);
 }
 
