@@ -158,8 +158,8 @@ static bool m_aci_spi_transfer(hal_aci_data_t * data_to_send, hal_aci_data_t * r
   Serial.println(data_to_send->buffer[byte_sent_cnt]);
   Serial.print("data_to_send->buffer[byte_sent_cnt++]: ");
   Serial.println(data_to_send->buffer[byte_sent_cnt++]);
-  Serial.print("value": );
-  Serial.println(data_to_send->buffer.params.value_set.value);
+  Serial.print("value:" );
+  Serial.println(data_to_send->buffer->params.value_set.value);
   byte_sent_cnt = 0;
   received_data->status_byte = spi_readwrite(data_to_send->buffer[byte_sent_cnt++]);
   // Send first byte, receive length from slave
