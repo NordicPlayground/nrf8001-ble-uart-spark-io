@@ -67,13 +67,14 @@ bool aci_queue_enqueue(aci_queue_t *aci_q, hal_aci_data_t *p_data)
 
   if (aci_queue_is_full(aci_q))
   {
+    Serial.println("queue is full");
     return false;
   }
 
   aci_q->aci_data[aci_q->tail].status_byte = 0;
   memcpy((uint8_t *)&(aci_q->aci_data[aci_q->tail].buffer[0]), (uint8_t *)&p_data->buffer[0], length + 1);
-  Serial.print("data buffer[0]: ");
-  Serial.println(&p_data->buffer[0]);
+  //Serial.print("data buffer[0]: ");
+  //Serial.println(p_data->buffer[0]);
   aci_q->tail = (aci_q->tail + 1) % ACI_QUEUE_SIZE;
 
   return true;
