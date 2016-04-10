@@ -307,8 +307,6 @@ void hal_aci_tl_init(aci_pins_t *a_pins, bool debug)
 bool hal_aci_tl_send(hal_aci_data_t *p_aci_cmd)
 {
   const uint8_t length = p_aci_cmd->buffer[0];
-  Serial.print("Length: ");
-  Serial.println(length);
   bool ret_val = false;
 
   if (length > HAL_ACI_MAX_LENGTH)
