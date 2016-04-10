@@ -88,6 +88,7 @@ static void m_aci_event_check(void)
   if (!aci_queue_dequeue(&aci_tx_q, &data_to_send))
   {
     /* queue was empty, nothing to send */
+    Serial.println("queue is empty");
     data_to_send.status_byte = 0;
     data_to_send.buffer[0] = 0;
   }
