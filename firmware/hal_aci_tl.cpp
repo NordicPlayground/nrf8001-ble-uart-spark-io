@@ -317,6 +317,7 @@ bool hal_aci_tl_send(hal_aci_data_t *p_aci_cmd)
   ret_val = aci_queue_enqueue(&aci_tx_q, p_aci_cmd);
   if (ret_val)
   {
+    Serial.println("successful enqueue");
     if(!aci_queue_is_full(&aci_rx_q))
     {
       // Lower the REQN only when successfully enqueued
