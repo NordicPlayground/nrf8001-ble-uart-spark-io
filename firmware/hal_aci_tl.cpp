@@ -161,8 +161,8 @@ static bool m_aci_spi_transfer(hal_aci_data_t * data_to_send, hal_aci_data_t * r
   Serial.print("data_to_send->buffer[byte_sent_cnt++]: ");
   Serial.println(data_to_send->buffer[byte_sent_cnt++]);
   Serial.print("value:" );
-/*  serial_cmd_t* p_cmd = (serial_cmd_t*) data_to_send->buffer;
-  Serial.println(p_cmd->params.value_set.value[0]);*/
+  serial_cmd_t* p_cmd = (serial_cmd_t*) data_to_send->buffer;
+  Serial.println(p_cmd->params.value_set.value[0]);
   Serial.println(data_to_send->buffer[3]);
   byte_sent_cnt = 0;
   received_data->status_byte = spi_readwrite(data_to_send->buffer[byte_sent_cnt++]);
@@ -188,7 +188,7 @@ static bool m_aci_spi_transfer(hal_aci_data_t * data_to_send, hal_aci_data_t * r
   // Transmit/receive the rest of the packet
   for (byte_cnt = 0; byte_cnt < max_bytes; byte_cnt++)
   {
-    Serial.println("sending");
+    //Serial.println("sending");
     received_data->buffer[byte_cnt+1] =  spi_readwrite(data_to_send->buffer[byte_sent_cnt++]);
   }
 
