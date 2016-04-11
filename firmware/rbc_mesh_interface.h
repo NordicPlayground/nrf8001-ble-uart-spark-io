@@ -69,7 +69,9 @@ bool rbc_mesh_init(
  *  @return True if the data was successfully queued for sending, 
  *  false if there is no more space to store messages to send.
  */
-bool rbc_mesh_value_set(uint16_t handle, uint8_t* buffer, int len);
+//bool rbc_mesh_value_set(uint16_t handle, uint8_t* buffer, int len);
+ bool rbc_mesh_value_set(uint16_t handle, uint8_t buffer, int len);
+
 
 /** @brief read value of a handle
  *  @details

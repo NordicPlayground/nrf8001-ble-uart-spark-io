@@ -124,7 +124,9 @@ bool rbc_mesh_init(
 	return hal_aci_tl_send(&msg_for_mesh);
 }
 
-bool rbc_mesh_value_set(uint16_t handle, uint8_t* buffer, int len){
+//bool rbc_mesh_value_set(uint16_t handle, uint8_t* buffer, int len){
+bool rbc_mesh_value_set(uint16_t handle, uint8_t buffer, int len){
+
 
 	if (len > HAL_ACI_MAX_LENGTH - 1 || len < 1)
 		return false;
@@ -135,16 +137,17 @@ bool rbc_mesh_value_set(uint16_t handle, uint8_t* buffer, int len){
     p_cmd->length = len + 2; // account for opcode and handle 
     p_cmd->opcode = SERIAL_CMD_OPCODE_VALUE_SET;
     p_cmd->params.value_set.handle = handle;
-    memcpy(p_cmd->params.value_set.value, buffer, len);
+    p_cmd->params.value_set.value = value;
+    //memcpy(p_cmd->params.value_set.value, buffer, len);
 
-    Serial.print("buffer[0]: ");
+/*    Serial.print("buffer[0]: ");
     Serial.println(*buffer);
     Serial.print("buffer[1]: ");
     Serial.println(buffer[1]);
     Serial.print("buffer[3]: ");
-    Serial.println(buffer[3]);
+    Serial.println(buffer[3]);*/
     Serial.print("buffer.value: ");
-    Serial.println(p_cmd->params.value_set.value[0]);
+    Serial.println(p_cmd->params.value_set.value);
 
 
 	return hal_aci_tl_send(&msg_for_mesh);
