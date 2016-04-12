@@ -89,8 +89,7 @@ typedef __packed_armcc struct
 typedef __packed_armcc struct 
 {
     rbc_mesh_value_handle_t handle;
-    //uint8_t value[RBC_MESH_VALUE_MAX_LEN];
-    uint8_t value;
+    uint8_t value[RBC_MESH_VALUE_MAX_LEN];
 } __packed_gcc serial_cmd_params_value_set_t;
 
 typedef __packed_armcc struct 
