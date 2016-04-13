@@ -113,7 +113,8 @@ bool rbc_mesh_init(
     hal_aci_data_t msg_for_mesh;
     serial_cmd_t* p_cmd = (serial_cmd_t*) msg_for_mesh.buffer;
 
-    p_cmd->length = 11;
+    //p_cmd->length = 11;
+    p_cmd->length = 10;
     p_cmd->opcode = SERIAL_CMD_OPCODE_INIT;
     p_cmd->params.init.access_addr = accessAddr;
     p_cmd->params.init.channel = chanNr;
@@ -151,7 +152,8 @@ bool rbc_mesh_value_enable(uint16_t handle){
     hal_aci_data_t msg_for_mesh;
     serial_cmd_t* p_cmd = (serial_cmd_t*) msg_for_mesh.buffer;
 
-    p_cmd->length = 2;
+    //p_cmd->length = 2;
+    p_cmd->length = 3;
     p_cmd->opcode = SERIAL_CMD_OPCODE_VALUE_ENABLE;
     p_cmd->params.value_enable.handle = handle;
 
@@ -163,7 +165,8 @@ bool rbc_mesh_value_disable(uint16_t handle){
     hal_aci_data_t msg_for_mesh;
     serial_cmd_t* p_cmd = (serial_cmd_t*) msg_for_mesh.buffer;
 
-    p_cmd->length = 2;
+    //p_cmd->length = 2;
+    p_cmd->length = 3;
     p_cmd->opcode = SERIAL_CMD_OPCODE_VALUE_DISABLE;
     p_cmd->params.value_enable.handle = handle;
 
@@ -175,7 +178,8 @@ bool rbc_mesh_value_get(uint16_t handle){
     hal_aci_data_t msg_for_mesh;
     serial_cmd_t* p_cmd = (serial_cmd_t*) msg_for_mesh.buffer;
 
-    p_cmd->length = 2;
+    //p_cmd->length = 2;
+    p_cmd->length = 3;
     p_cmd->opcode = SERIAL_CMD_OPCODE_VALUE_GET;
     p_cmd->params.value_enable.handle = handle;
 
