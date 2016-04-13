@@ -132,7 +132,7 @@ bool rbc_mesh_value_set(uint16_t handle, uint8_t* buffer, int len){
     hal_aci_data_t msg_for_mesh;
     serial_cmd_t* p_cmd = (serial_cmd_t*) msg_for_mesh.buffer;
 
-    p_cmd->length = len + 2; // account for opcode and handle 
+    p_cmd->length = len + 3; // account for opcode and handle 
     p_cmd->opcode = SERIAL_CMD_OPCODE_VALUE_SET;
     p_cmd->params.value_set.handle = handle;
     //p_cmd->params.value_set.value = buffer;
