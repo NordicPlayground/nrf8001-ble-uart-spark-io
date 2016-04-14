@@ -205,13 +205,15 @@ int set_val(String args){
     state = waitingForEvent;
 
     //uint8_t handle = args[0] - '0';
-    uint16_t handle = args[0] - '0';
+    uint8_t handle_hi = args[0] - '0';
+    uint8_t handle_lo = args[1] - '0';
+    uint16_t handle = (handle_hi << 8 | handle_lo);
     //uint8_t value = 0;
-    uint8_t value  = args[1] - '0';
+    uint8_t value  = args[2] - '0';
     //uint8_t value = args.toInt();
-    
+
    // Serial.printlnf("%p", &value);
-    
+
     return rbc_mesh_value_set(handle, &value, (uint8_t) 1);
 }
 
@@ -223,8 +225,10 @@ int get_val_req(String args){
     }
     state = waitingForEvent;
 
-    uint8_t handle = args[0] - '0';
-    
+    uint8_t handle_hi = args[0] - '0';
+    uint8_t handle_lo = args[1] - '0';
+    uint16_t handle = (handle_hi << 8 | handle_lo);
+
     return rbc_mesh_value_get(handle);
 }
 
@@ -234,10 +238,10 @@ aci_pins_t pins;
 void setup(void)
 {
   Serial.begin(9600);
-  
+
   //Serial.println("Setup");
   //Particle.publish("SETUP");
-  
+
   pins.board_name = BOARD_DEFAULT; //See board.h for details REDBEARLAB_SHIELD_V1_1 or BOARD_DEFAULT
   pins.reqn_pin   = A2;
   pins.rdyn_pin   = D5;
@@ -262,7 +266,7 @@ void setup(void)
   Spark.function("get_val_req", get_val_req);
   Spark.variable("state", &state, INT);
   Spark.variable("lastResponse", &lastResponse, INT);
-  
+
   Serial.println("SETUP DONE");
 
   return;
@@ -299,19 +303,19 @@ void initConnectionSlowly(){
 void loop() {
     //Particle.publish("HERE");
     static bool newMessage = false;
-    
+
     // send next initialization command to SPI slave until we leave init state
     if (state == init && newMessage) {
         //Serial.println("here");
         Particle.publish("New Message");
         initConnectionSlowly();
     }
-    
+
     //Process any ACI commands or events
     serial_evt_t evnt;
     newMessage = rbc_mesh_evt_get(&evnt);
     delay(100);
-    
+
     if(newMessage) {
         Serial.println("there is a new message");
         Serial.print("Event: ");
