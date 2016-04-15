@@ -37,6 +37,9 @@
 // This #include statement was automatically added by the Particle IDE.
 #include "nrf8001-ble-uart-spark-io/nrf8001-ble-uart-spark-io.h"
 
+// This #include statement was automatically added by the Particle IDE.
+#include "nrf8001-ble-uart-spark-io/nrf8001-ble-uart-spark-io.h"
+
 // This #include statementhttps://build.particle.io/build/56eaea97bd9cf0716b00065e#flash was automatically added by the Particle IDE.
 #include "nrf8001-ble-uart-spark-io/nrf8001-ble-uart-spark-io.h"
 
@@ -207,7 +210,9 @@ int set_val(String args){
     //uint8_t handle = args[0] - '0';
     uint8_t handle_hi = args[0] - '0';
     uint8_t handle_lo = args[1] - '0';
-    uint16_t handle = (handle_hi << 8 | handle_lo);
+    uint16_t handle = (handle_hi *10 + handle_lo);
+    Serial.println("handle: ");
+    Serial.print(handle);
     //uint8_t value = 0;
     uint8_t value  = args[2] - '0';
     //uint8_t value = args.toInt();
@@ -227,7 +232,7 @@ int get_val_req(String args){
 
     uint8_t handle_hi = args[0] - '0';
     uint8_t handle_lo = args[1] - '0';
-    uint16_t handle = (handle_hi << 8 | handle_lo);
+    uint16_t handle = (handle_hi * 10 + handle_lo);
 
     return rbc_mesh_value_get(handle);
 }
