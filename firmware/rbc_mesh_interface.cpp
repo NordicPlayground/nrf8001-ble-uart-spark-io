@@ -194,7 +194,7 @@ bool rbc_mesh_value_refresh(uint16_t handle){
     //p_cmd->length = 2;
     p_cmd->length = 3;
     p_cmd->opcode = SERIAL_CMD_OPCODE_VALUE_REFRESH;
-    p_cmd->params.value_enable.handle = handle;
+    p_cmd->params.value_refresh.handle = handle;
 
 	return hal_aci_tl_send(&msg_for_mesh);
 }
