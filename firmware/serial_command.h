@@ -117,7 +117,7 @@ typedef __packed_armcc struct
 typedef struct
 {
   uint16_t handle;
-} __packed serial_cmd_params_value_refresh_t
+} __packed serial_cmd_params_value_refresh_t;
 
 typedef __packed_armcc struct
 {
