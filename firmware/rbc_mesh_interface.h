@@ -177,7 +177,7 @@ void rbc_mesh_radio_reset();
 
 uint32_t vh_value_persistence_set(rbc_mesh_value_handle_t handle, bool persistent);
 uint32_t vh_tx_event_set(rbc_mesh_value_handle_t handle, bool do_tx_event);
-
+bool rbc_mesh_value_refresh(uint16_t handle);
 //TODO additional functions?
 
 #endif //MESH_INTERFACE_H__

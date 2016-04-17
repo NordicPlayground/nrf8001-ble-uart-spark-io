@@ -186,7 +186,7 @@ bool rbc_mesh_value_get(uint16_t handle){
 	return hal_aci_tl_send(&msg_for_mesh);
 }
 
-bool rbc_mesh_value_get(uint16_t handle){
+bool rbc_mesh_value_refresh(uint16_t handle){
 
     hal_aci_data_t msg_for_mesh;
     serial_cmd_t* p_cmd = (serial_cmd_t*) msg_for_mesh.buffer;
