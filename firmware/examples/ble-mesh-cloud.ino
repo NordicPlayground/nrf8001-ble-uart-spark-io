@@ -223,7 +223,7 @@ int set_val(String args){
 }
 
 // callback function for http command to get a handle value
-int get_val_req(String args){
+int get_val(String args){
 
     if(state != ready){
         return -1;
@@ -234,11 +234,15 @@ int get_val_req(String args){
     uint8_t handle_lo = args[1] - '0';
     uint16_t handle = (handle_hi * 10 + handle_lo);
 
-    return rbc_mesh_value_get(handle);
-}
+    rbc_mesh_value_refresh(handle);
 
-int get_last_response(String args) {
-    return lastResponse;
+    //wait for value to be refreshed
+    serial_evt_t evnt;
+    while(!rbc_mesh_evt_get(&evnt)); //wait for confirmation of refreshed value
+    delay(200); //allow time for handle cache to update
+    rbc_mesh_value_get(handle);
+    while(!rbc_mesh_evt_get(&evnt)); //wait for confirmation of refreshed value
+    return evnt.params.cmd_rsp.response.val_get.data[0];
 }
 
 aci_pins_t pins;
@@ -272,10 +276,8 @@ void setup(void)
   rbc_mesh_hw_init(&pins);
 
   Spark.function("set_val", set_val);
-  Spark.function("get_val_req", get_val_req);
+  Spark.function("get_val", get_val);
   Spark.variable("state", &state, INT);
-  Spark.variable("lastResponse", &lastResponse, INT);
-  Spark.function("get_last_response", get_last_response);
 
   Serial.println("SETUP DONE");
 
@@ -348,14 +350,6 @@ void loop() {
             Serial.println(digitalRead(D5));
             Serial.println(digitalRead(D2));
             Serial.println();
-        }
-
-        if (state == waitingForEvent) {
-            Serial.println("Waiting");
-            state = ready;
-            // save the response value of SPI slave into buffer
-            // can be read via callback function
-            lastResponse = evnt.params.cmd_rsp.response.val_get.data[0];
         }
     }
 }
