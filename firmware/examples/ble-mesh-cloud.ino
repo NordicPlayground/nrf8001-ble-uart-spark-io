@@ -237,6 +237,10 @@ int get_val_req(String args){
     return rbc_mesh_value_get(handle);
 }
 
+int get_last_response(String args) {
+    return lastResponse;
+}
+
 aci_pins_t pins;
 
 // arduino conform init function
@@ -271,6 +275,7 @@ void setup(void)
   Spark.function("get_val_req", get_val_req);
   Spark.variable("state", &state, INT);
   Spark.variable("lastResponse", &lastResponse, INT);
+  Spark.function("get_last_response", get_last_response);
 
   Serial.println("SETUP DONE");
 
@@ -288,13 +293,15 @@ void initConnectionSlowly(){
             Spark.publish("Sent init command");
             break;
         case 1:
-            rbc_mesh_value_enable((uint8_t) 1);
+            rbc_mesh_value_enable((uint8_t) 5);
+            //rbc_mesh_value_enable((uint8_t) 5);
+            //rbc_mesh_value_enable((uint8_t) 6);
             initState++;
             Serial.println("Enabled value 1");
             Spark.publish("Enabled value 1");
             break;
         case 2:
-            rbc_mesh_value_enable((uint8_t) 2);
+            rbc_mesh_value_enable((uint8_t) 6);
             initState++;
             Serial.println("Enabled value 2");
             break;
