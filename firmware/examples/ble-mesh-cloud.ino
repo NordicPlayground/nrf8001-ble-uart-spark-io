@@ -40,6 +40,21 @@
 // This #include statement was automatically added by the Particle IDE.
 #include "nrf8001-ble-uart-spark-io/nrf8001-ble-uart-spark-io.h"
 
+// This #include statement was automatically added by the Particle IDE.
+#include "nrf8001-ble-uart-spark-io/nrf8001-ble-uart-spark-io.h"
+
+// This #include statement was automatically added by the Particle IDE.
+#include "nrf8001-ble-uart-spark-io/nrf8001-ble-uart-spark-io.h"
+
+// This #include statement was automatically added by the Particle IDE.
+#include "nrf8001-ble-uart-spark-io/nrf8001-ble-uart-spark-io.h"
+
+// This #include statement was automatically added by the Particle IDE.
+#include "nrf8001-ble-uart-spark-io/nrf8001-ble-uart-spark-io.h"
+
+// This #include statement was automatically added by the Particle IDE.
+#include "nrf8001-ble-uart-spark-io/nrf8001-ble-uart-spark-io.h"
+
 // This #include statementhttps://build.particle.io/build/56eaea97bd9cf0716b00065e#flash was automatically added by the Particle IDE.
 #include "nrf8001-ble-uart-spark-io/nrf8001-ble-uart-spark-io.h"
 
@@ -191,6 +206,9 @@ int state_test = 100;
 
 // buffer for the last value send by the SPI slave
 int lastResponse;
+int temp;
+int flow_speed;
+int gas;
 
 int initState = 0;
 
@@ -222,8 +240,7 @@ int set_val(String args){
     return rbc_mesh_value_set(handle, &value, (uint8_t) 1);
 }
 
-// callback function for http command to get a handle value
-int get_val(String args){
+/*int get_val(String args){
 
     if(state != ready){
         return -1;
@@ -233,16 +250,83 @@ int get_val(String args){
     uint8_t handle_hi = args[0] - '0';
     uint8_t handle_lo = args[1] - '0';
     uint16_t handle = (handle_hi * 10 + handle_lo);
+    
+    return rbc_mesh_value_get(handle);
+}*/
 
-    rbc_mesh_value_refresh(handle);
+// callback function for http command to get a handle value
+int get_val(String args){
+    
+    //Serial.println("getting value");
+
+    if(state != ready){
+        Serial.println("State is NOT ready!");
+        return -1;
+    }
+    state = waitingForEvent;
+
+    uint8_t handle_hi = args[0] - '0';
+    uint8_t handle_lo = args[1] - '0';
+    uint16_t ping_handle = 32 + (handle_hi * 10 + handle_lo);
+    uint16_t handle = (handle_hi * 10 + handle_lo);
+    
+    uint8_t buffer_ = 1;
+
+    rbc_mesh_value_set(ping_handle, &buffer_, 1);
 
     //wait for value to be refreshed
     serial_evt_t evnt;
-    while(!rbc_mesh_evt_get(&evnt)); //wait for confirmation of refreshed value
+    /*while(!rbc_mesh_evt_get(&evnt)){ 
+        Serial.print(".");
+        delay(200);
+        }*/ //wait for confirmation of refreshed value
+    do {
+         rbc_mesh_evt_get(&evnt);
+         Serial.print("-");
+    }
+    while(((evnt.opcode != 0xB3) && (evnt.opcode != 0xB4)) || (evnt.params.event_update.handle != handle) || (evnt.params.event_new.handle != handle));
+    
+    Serial.println("GOT OUT OF FIRST WHILE LOOP!");
+    //rbc_mesh_evt_get(&evnt);
     delay(200); //allow time for handle cache to update
     rbc_mesh_value_get(handle);
-    while(!rbc_mesh_evt_get(&evnt)); //wait for confirmation of refreshed value
-    return evnt.params.cmd_rsp.response.val_get.data[0];
+    
+        do {
+         rbc_mesh_evt_get(&evnt);
+         Serial.print(".");
+    }
+    while(evnt.params.cmd_rsp.command_opcode != 0x7A);
+    
+    Serial.print("HANDLE IS: ");
+    Serial.println(handle);
+    Serial.print("PING HANDLE IS: ");
+    Serial.println(ping_handle);
+    
+    Serial.print("EVENT OPCODE: ");
+    Serial.println(evnt.opcode, HEX);
+    
+    Serial.print("VAL_GET.DATA: ");
+    Serial.println(evnt.params.cmd_rsp.response.val_get.data[0]);
+    
+    Serial.print("CMD_RESPONSE_OPCODE: ");
+    Serial.println(evnt.params.cmd_rsp.command_opcode, HEX);
+    
+    if (ping_handle == 37) {
+        gas = evnt.params.cmd_rsp.response.val_get.data[0];
+    }
+    else if(ping_handle == 38) {
+        temp = evnt.params.cmd_rsp.response.val_get.data[0];
+    }
+    else if(ping_handle == 35) {
+        flow_speed = evnt.params.cmd_rsp.response.val_get.data[0];
+    }
+    
+    state = ready;
+    
+    
+    //lastResponse = evnt.params.cmd_rsp.response.val_get.data[0];
+    //return evnt.params.cmd_rsp.response.val_get.data[0];
+    return 0;
 }
 
 aci_pins_t pins;
@@ -278,6 +362,10 @@ void setup(void)
   Spark.function("set_val", set_val);
   Spark.function("get_val", get_val);
   Spark.variable("state", &state, INT);
+  Spark.variable("temp", &temp, INT);
+  Spark.variable("gas", &gas, INT);
+  Spark.variable("flow_speed", &flow_speed, INT);
+  Spark.variable("lastResponse", &lastResponse, INT);
 
   Serial.println("SETUP DONE");
 
@@ -294,7 +382,7 @@ void initConnectionSlowly(){
             Serial.println("Sent init command");
             Spark.publish("Sent init command");
             break;
-        case 1:
+/*        case 1:
             rbc_mesh_value_enable((uint8_t) 5);
             //rbc_mesh_value_enable((uint8_t) 5);
             //rbc_mesh_value_enable((uint8_t) 6);
@@ -306,10 +394,17 @@ void initConnectionSlowly(){
             rbc_mesh_value_enable((uint8_t) 6);
             initState++;
             Serial.println("Enabled value 2");
-            break;
-        case 3:
+            break;*/
+        case 65:
             state = ready;
             Serial.println("init done");
+            break;
+        default:
+            rbc_mesh_value_enable((uint8_t) initState - 1);
+            Serial.print("Enabled value: ");
+            Serial.println(initState);
+            initState++;
+            break;
     }
 }
 
@@ -351,5 +446,14 @@ void loop() {
             Serial.println(digitalRead(D2));
             Serial.println();
         }
+        
+        if (state == waitingForEvent) {
+            Serial.println("Waiting");
+            state = ready;
+            
+            //lastResponse = evnt.params.cmd_rsp.response.val_get.data[0];
+        }
     }
+    
+    
 }
