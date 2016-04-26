@@ -1,3 +1,12 @@
+// This #include statement was automatically added by the Particle IDE.
+#include "aci_queue.h"
+
+// This #include statement was automatically added by the Particle IDE.
+#include "nrf8001-ble-uart-spark-io/nrf8001-ble-uart-spark-io.h"
+
+// This #include statement was automatically added by the Particle IDE.
+#include "rbc_mesh_interfaceh.h"
+
 /* Copyright (c) 2014, Nordic Semiconductor ASA
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -88,15 +97,18 @@ void setup(void)
   Serial.begin(9600);
   
   pins.board_name = BOARD_DEFAULT; //See board.h for details REDBEARLAB_SHIELD_V1_1 or BOARD_DEFAULT
-  pins.reqn_pin   = 9;
-  pins.rdyn_pin   = 8;
-  pins.mosi_pin   = MOSI;
-  pins.miso_pin   = MISO;
-  pins.sck_pin    = SCK;
+  pins.reqn_pin   = A2;
+  pins.rdyn_pin   = D5;
+  pins.mosi_pin   = A5;
+  pins.miso_pin   = A4;
+  pins.sck_pin    = A3;
+  
+  pins.spi_clock_divider      = SPI_CLOCK_DIV64;  //SPI_CLOCK_DIV8  = 8MHz SPI speed
+                                                    //SPI_CLOCK_DIV16 = 4MHz SPI speed
+                                                    //SPI_CLOCK_DIV64 = 1MHz SPI speed
 
-  pins.spi_clock_divider      = SPI_CLOCK_DIV8;
 
-  pins.reset_pin              = UNUSED;
+  pins.reset_pin              = D2;
   pins.active_pin             = UNUSED;
   pins.optional_chip_sel_pin  = UNUSED;
 
@@ -104,6 +116,15 @@ void setup(void)
   pins.interrupt_number       = 1;
 
   rbc_mesh_hw_init(&pins);
+  
+  Spark.function("set_val", set_val);
+  Spark.function("get_val_req", get_val_req);
+  Spark.variable("state", &state, INT);
+  Spark.variable("lastResponse", &lastResponse, INT);
+  
+  Serial.println("Initalization Done");
+  
+  return;
 }
 
 // sending intialization commands to SPI slave
@@ -111,17 +132,17 @@ void setup(void)
 void initConnectionSlowly(){
     switch(initState) {
         case 0:
-            rbc_mesh_init(ACCESS_ADDR, 38, 100);
+            rbc_mesh_init(ACCESS_ADDR, (uint8_t) 38, (uint32_t)100);
             initState++;
             Serial.println("Sent init command");
             break;
         case 1:
-            rbc_mesh_value_enable(1);
+            rbc_mesh_value_enable((uint8_t)1);
             initState++;
             Serial.println("Enabled value 1");
             break;
         case 2:
-            rbc_mesh_value_enable(2);
+            rbc_mesh_value_enable((uint8_t)2);
             initState++;
             Serial.println("Enabled value 2");
             break;
