@@ -24,6 +24,16 @@
 
 #include "serial_evt.h"
 
+#define RBC_MESH_APP_MAX_HANDLE                     (0xFFEF) /**< Upper limit to application defined handles. The last 16 handles are reserved for mesh-maintenance. */
+#define NRF_ERROR_INVALID_ADDR                (NRF_ERROR_BASE_NUM + 16) ///< Bad Memory Address
+
+ static enum
+{
+    MESH_STATE_UNINITIALIZED,
+    MESH_STATE_RUNNING,
+    MESH_STATE_STOPPED
+} g_mesh_state;
+
 /** @brief executes an echo-test
  *  @details
  *  Promts the slave to echo whatever the buffer contains
@@ -48,8 +58,7 @@ bool rbc_mesh_echo(uint8_t* buffer, int len);
 bool rbc_mesh_init(
 	uint32_t accessAddr,
 	uint8_t chanNr,
-	uint8_t handleCount,
-    uint32_t advInt_ms);
+    uint32_t interval_min_ms);
 
 /** @brief alter value of a handle
  *  @details
@@ -60,7 +69,8 @@ bool rbc_mesh_init(
  *  @return True if the data was successfully queued for sending, 
  *  false if there is no more space to store messages to send.
  */
-bool rbc_mesh_value_set(uint8_t handle, uint8_t* buffer, int len);
+bool rbc_mesh_value_set(uint16_t handle, uint8_t* buffer, int len);
+
 
 /** @brief read value of a handle
  *  @details
@@ -69,7 +79,7 @@ bool rbc_mesh_value_set(uint8_t handle, uint8_t* buffer, int len);
  *  @return True if the data was successfully queued for sending, 
  *  false if there is no more space to store messages to send.
  */
-bool rbc_mesh_value_get(uint8_t handle);
+bool rbc_mesh_value_get(uint16_t handle);
 
 /** @brief start broadcasting value of a handle
  *  @details
@@ -78,7 +88,7 @@ bool rbc_mesh_value_get(uint8_t handle);
  *  @return True if the data was successfully queued for sending, 
  *  false if there is no more space to store messages to send.
  */
-bool rbc_mesh_value_enable(uint8_t handle);
+bool rbc_mesh_value_enable(uint16_t handle);
 
 /** @brief stop broadcasting value of a handle
  *  @details
@@ -87,7 +97,16 @@ bool rbc_mesh_value_enable(uint8_t handle);
  *  @return True if the data was successfully queued for sending, 
  *  false if there is no more space to store messages to send.
  */
-bool rbc_mesh_value_disable(uint8_t handle);
+bool rbc_mesh_value_disable(uint16_t handle);
+
+//TODO add flag functions for TX event and cache persistence
+uint32_t rbc_mesh_persistence_set(rbc_mesh_value_handle_t handle, bool persistent);
+uint32_t rbc_mesh_tx_event_set(rbc_mesh_value_handle_t handle, bool do_tx_event);
+
+uint32_t rbc_mesh_persistence_get(rbc_mesh_value_handle_t handle, bool* is_persistent);
+uint32_t rbc_mesh_tx_event_flag_get(rbc_mesh_value_handle_t handle, bool* is_doing_tx_event);
+ 
+
 
 /** @brief read the build_version
  *  @details
@@ -119,7 +138,7 @@ bool rbc_mesh_channel_get();
  *  @return True if the data was successfully queued for sending, 
  *  false if there is no more space to store messages to send.
  */
-bool rbc_mesh_handle_count_get();
+//bool rbc_mesh_handle_count_get();//TODO remove
 
 /** @brief read the advertising intervall
  *  @details
@@ -128,7 +147,8 @@ bool rbc_mesh_handle_count_get();
  *  @return True if the data was successfully queued for sending, 
  *  false if there is no more space to store messages to send.
  */
-bool rbc_mesh_adv_int_get();
+//bool rbc_mesh_adv_int_get();//TODO different name? YES: interval_min_ms_get()
+ bool interval_min_ms_get();
 
 /** @brief checkes if new events arrived
  *  @details
@@ -154,5 +174,10 @@ void rbc_mesh_hw_init(aci_pins_t* pins);
  *  a DEVICE_STARTED event when it is ready to receive initialization commands.
  */
 void rbc_mesh_radio_reset();
+
+uint32_t vh_value_persistence_set(rbc_mesh_value_handle_t handle, bool persistent);
+uint32_t vh_tx_event_set(rbc_mesh_value_handle_t handle, bool do_tx_event);
+bool rbc_mesh_value_refresh(uint16_t handle);
+//TODO additional functions?
 
 #endif //MESH_INTERFACE_H__

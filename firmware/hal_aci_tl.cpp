@@ -26,6 +26,7 @@
 #include "hal_platform.h"
 #include "hal_aci_tl.h"
 #include "aci_queue.h"
+#include "serial_command.h"
 
 static void m_aci_data_print(hal_aci_data_t *p_data);
 static void m_aci_event_check(void);
@@ -87,6 +88,7 @@ static void m_aci_event_check(void)
   if (!aci_queue_dequeue(&aci_tx_q, &data_to_send))
   {
     /* queue was empty, nothing to send */
+    Serial.println("queue is empty");
     data_to_send.status_byte = 0;
     data_to_send.buffer[0] = 0;
   }
@@ -154,6 +156,15 @@ static bool m_aci_spi_transfer(hal_aci_data_t * data_to_send, hal_aci_data_t * r
 
   // Send length, receive header
   byte_sent_cnt = 0;
+/*  Serial.print("data_to_send->buffer[byte_sent_cnt]: ");
+  Serial.println(data_to_send->buffer[byte_sent_cnt]);
+  Serial.print("data_to_send->buffer[byte_sent_cnt++]: ");
+  Serial.println(data_to_send->buffer[byte_sent_cnt++]);
+  Serial.print("value:" );
+  serial_cmd_t* p_cmd = (serial_cmd_t*) data_to_send->buffer;
+  Serial.println(p_cmd->params.value_set.value);
+  Serial.println(data_to_send->buffer[3]);*/
+  byte_sent_cnt = 0;
   received_data->status_byte = spi_readwrite(data_to_send->buffer[byte_sent_cnt++]);
   // Send first byte, receive length from slave
   received_data->buffer[0] = spi_readwrite(data_to_send->buffer[byte_sent_cnt++]);
@@ -177,6 +188,7 @@ static bool m_aci_spi_transfer(hal_aci_data_t * data_to_send, hal_aci_data_t * r
   // Transmit/receive the rest of the packet
   for (byte_cnt = 0; byte_cnt < max_bytes; byte_cnt++)
   {
+    //Serial.println("sending");
     received_data->buffer[byte_cnt+1] =  spi_readwrite(data_to_send->buffer[byte_sent_cnt++]);
   }
 
@@ -240,6 +252,8 @@ bool hal_aci_tl_event_get(hal_aci_data_t *p_aci_data)
     {
       m_aci_reqn_enable();
     }
+
+    Serial.println("TRUE");
 
     return true;
   }
@@ -305,6 +319,7 @@ bool hal_aci_tl_send(hal_aci_data_t *p_aci_cmd)
   ret_val = aci_queue_enqueue(&aci_tx_q, p_aci_cmd);
   if (ret_val)
   {
+    Serial.println("successful enqueue");
     if(!aci_queue_is_full(&aci_rx_q))
     {
       // Lower the REQN only when successfully enqueued
@@ -323,6 +338,8 @@ bool hal_aci_tl_send(hal_aci_data_t *p_aci_cmd)
 
 static uint8_t spi_readwrite(const uint8_t aci_byte)
 {	
+  Serial.print("spi_readwrite: ");
+  Serial.println(aci_byte, HEX);
 	return SPI.transfer(aci_byte);
 }
 
