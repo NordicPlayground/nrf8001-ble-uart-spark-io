@@ -28,7 +28,7 @@ Connect the Spark Core to the RedBearLab Bluetooth Low Energy Shield using this 
 
 You may initialize the library with other pin configurations, but some configurations may not work.
 The nRF51-DK will need other pins.
-If you have [Bluetooth Low Energy broadcast mesh](https://github.com/NordicSemiconductor/nRF51-ble-bcast-mesh "Go to BLE broadcast mesh repository")
+If you have [Bluetooth Low Energy broadcast mesh](https://github.com/NordicPlayground/nRF51-ble-bcast-mesh "Go to BLE broadcast mesh repository")
 the connections will look like this:
 
 | nRF51-DK		| Spark Core	|	Explanation |
